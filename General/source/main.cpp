@@ -1,5 +1,9 @@
 #include <iostream>
+#include "Output.hpp"
+
 
 int main()  {
-    std::cout << "Hello, world!\n";
+    Output::LogDeath("my happiness");
+    Output::LogAttack("bears", "wolfs", 100, 50, 7, 30);
+    Output::LogVictory();
 }
