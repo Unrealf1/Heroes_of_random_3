@@ -5,7 +5,7 @@
 
 class Unit {
  public:
-    Unit(size_t hp, size_t dmg, size_t armor);
+    Unit(size_t hp, size_t dmg, size_t armor, size_t speed);
 
     void Attack(Unit* target);
     void TakeDamage(size_t dmg);
@@ -17,6 +17,7 @@ class Unit {
     const size_t hp;
     const size_t damage;
     const size_t armor;
+    const size_t speed;
 };
 
 #endif //HEROES_OF_EANDOM_UNITS_HPP
