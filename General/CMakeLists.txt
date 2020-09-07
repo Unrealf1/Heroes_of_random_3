@@ -4,7 +4,7 @@ project(hor-3-general)
 
 file(GLOB_RECURSE SOURCES . source/*.cpp)
 
-add_library(General SHARED ${SOURCES})
+add_executable(General ${SOURCES})
 
 target_link_libraries(General PUBLIC CONAN_PKG::spdlog)
 target_link_libraries(General PRIVATE project_options project_warnings)
