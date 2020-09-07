@@ -1,0 +1,8 @@
+#!/bin/bash
+
+if ./build.sh -DCMAKE_BUILD_TYPE=Debug -DENABLE_SANITIZER_ADDRESS=TRUE -DENABLE_SANITIZER_LEAK=TRUE -DENABLE_SANITIZER_UNDEFINED_BEHAVIOR=TRUE -DENABLE_SANITIZER_MEMORY=TRUE $@; then
+echo "Built tests";
+else 
+echo "Could not build tests";
+exit 1 
+fi
