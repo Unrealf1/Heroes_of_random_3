@@ -2,6 +2,10 @@
 #include <fmt/color.h>
 #include <ostream>
 
+#include "random.hpp"
+
+using rnd = RandomGenerator;
+
 class Output {
 public:
     static void LogString(
@@ -19,7 +23,7 @@ public:
             const int64_t died_attackers,
             const int64_t died_defenders
             ) {
-        const std::string& quote = attack_quotes[0];
+        const std::string& quote = rnd::sample(attack_quotes);
         LogString(
                 fmt::format(
                         quote,
@@ -33,7 +37,7 @@ public:
     }
 
     static void LogDeath(const std::string& name) {
-        const std::string& quote = death_quotes[0];
+        const std::string& quote = rnd::sample(death_quotes);
         LogString(
                 fmt::format(
                         quote,
@@ -42,7 +46,7 @@ public:
     }
 
     static void LogVictory() {
-        const std::string& quote = victory_quotes[0];
+        const std::string& quote = rnd::sample(victory_quotes);
         LogString(fmt::format(quote), fmt::color::yellow);
     }
 private:

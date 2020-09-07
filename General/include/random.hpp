@@ -8,24 +8,28 @@
 #include <array>
 
 class RandomGenerator {
+public:
+    static void set_seed(unsigned int seed) {
+        srand(seed);
+    }
     // low included, high excluded
-    int64_t randint(int64_t low, int64_t high) {
+    static int64_t randint(int64_t low, int64_t high) {
         assert(high > low);
         return (rand() % (high - low)) + low;
     }
 
-    int64_t randint(int64_t high) {
+    static int64_t randint(int64_t high) {
         return randint(0, high);
     }
 
     template<typename T>
-    T sample(std::vector<T> arr) {
+    static T sample(const std::vector<T>& arr) {
         return arr[randint(arr.size())];
     }
 
-    template<typename T, int N>
-    T sample(std::array<T, N> arr) {
-        return arr[randint(arr.size())];
+    template<typename T, size_t N>
+    static T sample(const std::array<T, N>& arr) {
+        return arr[static_cast<size_t>(randint((arr.size())))];
     }
 };
 
