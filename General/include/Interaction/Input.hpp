@@ -32,30 +32,23 @@ public:
                                     const fmt::color& clr,
                                     const std::vector<std::string>& choices,
                                     const std::string& backup = "") {
-        auto new_choices = choices;
-        /*for (auto& ch : new_choices) {
-            std::transform(ch.begin(), ch.end(), ch.begin(), ::tolower);
-        }*/
 
         std::string answer = AskForLine(message, clr);
         const std::string& real_backup = backup.empty() ? message : backup;
         bool need_leave = false;
-        for (auto& ch : new_choices) {
+        for (auto& ch : choices) {
             if (ch == answer) {
                 need_leave = true;
             }
         }
         while(!need_leave) {
-            for (auto& ch : new_choices) {
+            answer = AskForLine(real_backup, clr);
+            for (auto& ch : choices) {
                 if (ch == answer) {
                     need_leave = true;
                 }
             }
-            answer = AskForLine(real_backup, clr);
         }
-        /*while (std::find(choices.begin(), choices.end(), answer) == choices.end()) {
-            answer = AskForLine(real_backup, clr);
-        }*/
 
         return answer;
     }
