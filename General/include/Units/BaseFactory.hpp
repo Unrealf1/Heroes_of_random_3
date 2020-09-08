@@ -11,7 +11,7 @@ class BaseFactory {
 public:
     virtual ~BaseFactory() = default;
     virtual UnitGroup Create(int64_t number) = 0;
-    virtual int64_t GetValue() const = 0;
+    virtual int64_t GetPrice() const = 0;
 };
 
 #endif //HEROES_OF_RANDOM_BASEFACTORY_HPP

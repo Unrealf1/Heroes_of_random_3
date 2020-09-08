@@ -22,7 +22,7 @@ public:
         std::string offer;
         for (size_t i = 0; i < factories.size(); ++i) {
             available_units[i] = factories[i]->Create(1).name;
-            offer += fmt::format(pattern, factories[i]->Create(1).name, factories[i]->GetValue()) + "\n";
+            offer += fmt::format(pattern, factories[i]->Create(1).name, factories[i]->GetPrice()) + "\n";
         }
         std::vector<UnitGroup> playerUnits;
         std::string choice;
@@ -42,7 +42,7 @@ public:
             for (auto& f : factories) {
                 if (f->Create(1).name == choice) {
                     int64_t num = Input::AskForInt("How many?");
-                    auto total_cost = num * f->GetValue();
+                    auto total_cost = num * f->GetPrice();
                     if (total_cost > current_money) {
                         Output::LogInfo("Sorry, not enough money");
                         break;
@@ -87,7 +87,7 @@ private:
     std::vector<BaseFactory*> getAffordable(int64_t money) {
         std::vector<BaseFactory*> affordable_factories;
         for (auto& f : factories) {
-            if (f->GetValue() <= money) {
+            if (f->GetPrice() <= money) {
                 affordable_factories.push_back(f);
             }
         }
@@ -99,12 +99,12 @@ private:
         std::vector<UnitGroup> dudes;
         while (!affordable.empty()) {
             auto& choice = RandomGenerator::sample(affordable);
-            auto num = RandomGenerator::randint(1, cost / choice->GetValue() + 1);
+            auto num = RandomGenerator::randint(1, cost / choice->GetPrice() + 1);
             if (num == 0) {
                 continue;
             }
             dudes.push_back(choice->Create(num));
-            cost -= choice->GetValue() * num;
+            cost -= choice->GetPrice() * num;
             affordable = getAffordable(cost);
         }
         return dudes;

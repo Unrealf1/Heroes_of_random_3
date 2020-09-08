@@ -21,7 +21,7 @@ public:
         );
     }
 
-    int64_t GetValue() const override {
+    int64_t GetPrice() const override {
         return 20;
     }
 };
