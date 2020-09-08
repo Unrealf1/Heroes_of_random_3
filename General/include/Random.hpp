@@ -20,6 +20,11 @@ public:
         return (rand() % (high - low)) + low;
     }
 
+    static size_t randuint(size_t low, size_t high) {
+        assert(high > low);
+        return (static_cast<size_t>(rand()) % (high - low)) + low;
+    }
+
     static int64_t randint(int64_t high) {
         return randint(0, high);
     }
@@ -27,6 +32,14 @@ public:
     template<typename T>
     static const T& sample(const std::vector<T>& arr) {
         return arr[static_cast<size_t>(randint(static_cast<int64_t >(arr.size())))];
+    }
+
+    template<typename T>
+    static void shuffle(std::vector<T>& arr) {
+        for (size_t i = 0; i < arr.size(); ++i) {
+            size_t j = randuint(i, arr.size());
+            std::swap<T>(arr[i], arr[j]);
+        }
     }
 
     template<typename T, size_t N>

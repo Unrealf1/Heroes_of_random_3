@@ -11,11 +11,11 @@ class KnightFactory: public BaseFactory {
 public:
     UnitGroup Create(int64_t number) override {
         return UnitGroup(
-                50,
+                30,
                 4,
                 6,
-                3,
-                3,
+                2,
+                1,
                 "Knights",
                 number
         );

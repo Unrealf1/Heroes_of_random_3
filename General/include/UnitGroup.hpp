@@ -22,14 +22,20 @@ public:
             std::string name,
             int64_t count=0
         )
-        : hp(hp),
+        : name(std::move(name)),
+          hp(hp),
           min_damage(min_damage),
           max_damage(max_damage),
           armor(armor),
           speed(speed),
-          name(std::move(name)),
           count(count),
-          top_hp(hp) {}
+          top_hp(hp) {
+    }
+
+    UnitGroup(const UnitGroup&) = default;
+    UnitGroup(UnitGroup&&) = default;
+    UnitGroup& operator=(const UnitGroup&)=default;
+    UnitGroup& operator=(UnitGroup&&)=default;
 
     int64_t Attack(UnitGroup& target) {
         int64_t total_dmg = 0;
@@ -76,15 +82,14 @@ public:
         return top_hp;
     }
 
-    const int64_t hp;
-    const int64_t min_damage;
-    const int64_t max_damage;
-    const int64_t armor;
-    const int64_t speed;
+    std::string name;
 
-    const std::string name;
+    int64_t hp;
+    int64_t min_damage;
+    int64_t max_damage;
+    int64_t armor;
+    int64_t speed;
 
-private:
     int64_t count;
     int64_t top_hp;
 };

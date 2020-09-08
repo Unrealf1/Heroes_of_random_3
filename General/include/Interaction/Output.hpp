@@ -87,26 +87,28 @@ public:
         LogString(fmt::format(quote), fmt::color::blue);
     }
 
-    // Should use stringbuilder
+    static std::string ArmyToString(const Army& army) {
+        std::string result;
+        for (size_t i = 0; i < army.composition.size(); ++i) {
+            auto& group = army.composition[
+                    (i + army.GetCurrentIndex()) % army.composition.size()
+            ];
+            if (group.IsAlive()) {
+                result += fmt::format("{}({} left)  ", group.name, group.GetCount());
+            }
+        }
+        return result;
+    }
+
+    static void LogArmy(const Army& army) {
+        LogString(ArmyToString(army), fmt::color::white);
+    }
+
     static void LogBattleStatus(const Army& player, const Army& enemy) {
         std::string to_log = "Current disposition:\nPlayer: ";
-        for (size_t i = 0; i < player.composition.size(); ++i) {
-            auto& group = player.composition[
-                    (i + player.GetCurrentIndex()) % player.composition.size()
-            ];
-            if (group.IsAlive()) {
-                to_log += fmt::format("{}({} left)  ", group.name, group.GetCount());
-            }
-        }
+        to_log += ArmyToString(player);
         to_log += "\nEnemy: ";
-        for (size_t i = 0; i < enemy.composition.size(); ++i) {
-            auto& group = enemy.composition[
-                    (i + enemy.GetCurrentIndex()) % enemy.composition.size()
-            ];
-            if (group.IsAlive()) {
-                to_log += fmt::format("{}({} left)  ", group.name, group.GetCount());
-            }
-        }
+        to_log += ArmyToString(enemy);
         LogString(to_log, fmt::color::orange);
     }
 

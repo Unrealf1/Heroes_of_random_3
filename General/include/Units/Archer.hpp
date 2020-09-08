@@ -13,7 +13,7 @@ public:
         return UnitGroup(
                 12,
                 2,
-                7,
+                5,
                 0,
                 7,
                 "Archers",
@@ -22,7 +22,7 @@ public:
     }
 
     int64_t GetPrice() const override {
-        return 20;
+        return 10;
     }
 };
 

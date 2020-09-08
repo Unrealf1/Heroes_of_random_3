@@ -11,9 +11,9 @@ class SwordsmanFactory: public BaseFactory {
 public:
     UnitGroup Create(int64_t number) override {
         return UnitGroup(
-            30,
-            3,
+            12,
             5,
+            15,
             1,
             3,
             "Swordsmen",
