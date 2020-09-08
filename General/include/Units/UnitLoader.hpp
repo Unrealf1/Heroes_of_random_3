@@ -16,12 +16,21 @@ using json = nlohmann::json;
 class UnitLoader {
     using cloners_t = std::vector<Cloner*>;
 public:
-    explicit UnitLoader(const std::string& list_path) {
+    explicit UnitLoader(const std::string& list_dir): list_path(fmt::format("{}/list.json", list_dir)) {
         std::ifstream ifs(list_path);
-        json list;
-        ifs >> list;
-        for (const auto& path : list["units"]) {
-            cloners.push_back(parseUnit(path));
+        if (ifs.is_open()) {
+            fmt::print("was good\n");
+            json list;
+            ifs >> list;
+            for (const auto& name : list["units"]) {
+                cloners.push_back(UnitLoader::parseUnit(fmt::format("{}/{}.json", list_dir, name)));
+            }
+        } else {
+            fmt::print("was bad\n");
+            std::ofstream ofs(list_path);
+            json list;
+            list["units"] = json::array();
+            ofs << list.dump(4);
         }
     }
 
@@ -36,6 +45,7 @@ public:
     }
 
     static Cloner* parseUnit(const std::string& filepath) {
+        std::cout << "PARSING!!" << std::endl;
         std::ifstream file(filepath);
         json js;
         file >> js;
@@ -59,6 +69,7 @@ public:
         );
     }
 private:
+    const std::string list_path;
     cloners_t cloners;
 };
 

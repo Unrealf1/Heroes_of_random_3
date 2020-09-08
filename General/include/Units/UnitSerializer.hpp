@@ -23,9 +23,9 @@ public:
         js["armor"] = cloner.getReference().armor;
         js["speed"] = cloner.getReference().speed;
         js["name"] = cloner.getReference().name;
-        js["cost"] = cloner.cost;
+        js["cost"] = cloner.getCost();
         std::ofstream off(fmt::format("{}/{}.json", dir_path, cloner.getReference().name));
-        off << js;
+        off << js.dump(4);
     }
 private:
     const std::string dir_path;

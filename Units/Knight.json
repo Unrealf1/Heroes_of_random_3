@@ -1,0 +1,9 @@
+{
+    "armor": 2,
+    "cost": 40,
+    "hp": 31,
+    "max_damage": 5,
+    "min_damage": 3,
+    "name": "Knight",
+    "speed": 2
+}

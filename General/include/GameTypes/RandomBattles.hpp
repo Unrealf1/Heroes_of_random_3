@@ -23,7 +23,7 @@ public:
         std::string offer;
         for (size_t i = 0; i < cloners.size(); ++i) {
             available_units[i] = cloners[i]->getReference().name;
-            offer += fmt::format(pattern, cloners[i]->getReference().name, cloners[i]->cost) + "\n";
+            offer += fmt::format(pattern, cloners[i]->getReference().name, cloners[i]->getCost()) + "\n";
         }
         std::vector<UnitGroup> playerUnits;
         std::string choice;
@@ -43,7 +43,7 @@ public:
             for (auto& f : cloners) {
                 if (f->getReference().name == choice) {
                     int64_t num = Input::AskForInt("How many?");
-                    auto total_cost = num * f->cost;
+                    auto total_cost = num * f->getCost();
                     if (total_cost > current_money) {
                         Output::LogInfo("Sorry, not enough money");
                         break;
@@ -85,7 +85,7 @@ private:
     std::vector<Cloner*> getAffordable(int64_t money) {
         std::vector<Cloner*> affordable_factories;
         for (auto& f : cloners) {
-            if (f->cost <= money) {
+            if (f->getCost() <= money) {
                 affordable_factories.push_back(f);
             }
         }
@@ -97,12 +97,12 @@ private:
         std::vector<UnitGroup> dudes;
         while (!affordable.empty()) {
             auto& choice = RandomGenerator::sample(affordable);
-            auto num = RandomGenerator::randint(1, cost / choice->cost + 1);
+            auto num = RandomGenerator::randint(1, cost / choice->getCost() + 1);
             if (num == 0) {
                 continue;
             }
             dudes.push_back(choice->create(num));
-            cost -= choice->cost * num;
+            cost -= choice->getCost() * num;
             affordable = getAffordable(cost);
         }
         return dudes;

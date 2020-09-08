@@ -8,7 +8,7 @@
 #include "UnitGroup.hpp"
 
 class Cloner {
-    friend class UnitInspector;
+    friend class UnitEditor;
 public:
     Cloner(UnitGroup reference, int64_t cost)
     : cost(cost), reference(std::move(reference)){}
@@ -23,8 +23,11 @@ public:
         return reference;
     }
 
-    const int64_t cost;
+    int64_t getCost() const {
+        return cost;
+    }
 private:
+    int64_t cost;
     UnitGroup reference;
 };
 
