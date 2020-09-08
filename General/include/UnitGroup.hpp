@@ -1,13 +1,18 @@
-#ifndef HEROES_OF_EANDOM_UNITS_HPP
-#define HEROES_OF_EANDOM_UNITS_HPP
+#ifndef HEROES_OF_RANDOM_UNITGROUP_HPP
+#define HEROES_OF_RANDOM_UNITGROUP_HPP
 
 #include <cstdlib>
 #include <algorithm>
 #include <string>
 #include <utility>
+#include <fmt/core.h>
+
+#include "Random.hpp"
+
+using rnd = RandomGenerator;
 
 class UnitGroup {
- public:
+public:
     UnitGroup(
             int64_t hp,
             int64_t min_damage,
@@ -17,21 +22,22 @@ class UnitGroup {
             std::string name,
             int64_t count=0
         )
-        : count(count),
-          top_hp(hp),
-          hp(hp),
+        : hp(hp),
           min_damage(min_damage),
           max_damage(max_damage),
           armor(armor),
           speed(speed),
-          name(std::move(name)) {}
+          name(std::move(name)),
+          count(count),
+          top_hp(hp) {}
 
-    void Attack(UnitGroup& target) {
+    int64_t Attack(UnitGroup& target) {
         int64_t total_dmg = 0;
         for (int64_t i = 0; i < count; ++i) {
-            total_dmg += std::max<int64_t>(random() - target.armor, 0);
+            total_dmg += std::max<int64_t>(rnd::randint(min_damage, max_damage+1) - target.armor, 0);
         }
         target.TakeDamage(total_dmg);
+        return total_dmg;
     }
 
     void TakeDamage(int64_t dmg) {
@@ -58,12 +64,17 @@ class UnitGroup {
         top_hp -= dmg;
     }
 
-    bool IsAlive() {
+    bool IsAlive() const {
         return count > 0;
     }
 
-    int64_t count;
-    int64_t top_hp;
+    int64_t GetCount() {
+        return count;
+    }
+
+    int64_t GetTopHp() {
+        return top_hp;
+    }
 
     const int64_t hp;
     const int64_t min_damage;
@@ -72,6 +83,10 @@ class UnitGroup {
     const int64_t speed;
 
     const std::string name;
+
+private:
+    int64_t count;
+    int64_t top_hp;
 };
 
 #endif //HEROES_OF_EANDOM_UNITS_HPP

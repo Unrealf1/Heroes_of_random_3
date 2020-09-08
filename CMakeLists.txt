@@ -4,7 +4,7 @@ set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
-project(heroes_of_eandom)
+project(heroes_of_random)
 
 option(DEBUG "Build with debug flags" OFF)
 option(TESTS "Build tests" OFF)
