@@ -1,9 +1,9 @@
 {
     "armor": 1,
     "cost": 12,
-    "hp": 20,
-    "max_damage": 4,
-    "min_damage": 3,
+    "hp": 10,
+    "max_damage": 1,
+    "min_damage": 15,
     "name": "Swordsmen",
     "speed": 4,
     "tags": []
