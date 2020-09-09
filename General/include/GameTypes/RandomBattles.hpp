@@ -19,46 +19,41 @@ public:
     : cloners(std::move(cloners)), initial_money(initial_money){}
     void Start() {
         std::string pattern = "{} for {}";
-        std::vector<std::string> available_units(cloners.size() + 1);
+        std::vector<std::string> available_units(cloners.size());
         std::string offer;
         for (size_t i = 0; i < cloners.size(); ++i) {
             available_units[i] = cloners[i]->getReference().name;
             offer += fmt::format(pattern, cloners[i]->getReference().name, cloners[i]->getCost()) + "\n";
         }
         std::vector<UnitGroup> playerUnits;
-        std::string choice;
         auto current_money = initial_money;
-        do {
-            Output::LogInfo("");
-            choice = Input::AskForChoiceWithFinish(
-                    fmt::format(
-                            "You have {} money. Choose units to buy. Available:\n{}",
-                            current_money,
-                            offer),
-                    fmt::color::white,
-                    available_units,
-                    "Please choose one of the given options"
-            );
-
+        std::function<void(std::string)> dispatcher([this, &current_money, &playerUnits](std::string choice){
             for (auto& f : cloners) {
                 if (f->getReference().name == choice) {
                     int64_t num = Input::AskForInt("How many?");
                     auto total_cost = num * f->getCost();
                     if (total_cost > current_money) {
                         Output::LogInfo("Sorry, not enough money");
-                        break;
                     } else {
                         if (Input::Confirm(fmt::format("Total cost is {}. Are you sure? (yes/no)", total_cost),
                                            fmt::color::white)) {
                             current_money -= total_cost;
                             playerUnits.push_back(f->create(num));
                         }
-                        break;
                     }
+                    break;
                 }
             }
+        });
+        Input::ChoiceActionWithFinish(
+                dispatcher,
+                fmt::format(
+                        "You have {} money. Choose units to buy. Available:\n{}",
+                        current_money,
+                        offer),
+                fmt::color::white,
+                available_units);
 
-        } while(choice != "finish");
         Army army(playerUnits);
         Play(army);
     }
