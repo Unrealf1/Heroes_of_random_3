@@ -1,0 +1,12 @@
+{
+    "armor": 0,
+    "cost": 10,
+    "hp": 18,
+    "max_damage": 4,
+    "min_damage": 0,
+    "name": "Cute dog",
+    "speed": 3,
+    "tags": [
+        "vampiric"
+    ]
+}

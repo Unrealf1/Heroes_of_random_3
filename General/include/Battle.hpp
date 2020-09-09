@@ -91,20 +91,26 @@ private:
             auto& group = player.composition[
                     (i + player.GetCurrentIndex()) % player.composition.size()
             ];
-            if (group.IsAlive()) {
-                to_log += fmt::format("{}({} left)  ", group.name, group.GetCount());
-            }
+            groupToString(group, to_log);
         }
         to_log += "\nEnemy: ";
         for (size_t i = 0; i < enemy.composition.size(); ++i) {
             auto& group = enemy.composition[
                     (i + enemy.GetCurrentIndex()) % enemy.composition.size()
             ];
-            if (group.IsAlive()) {
-                to_log += fmt::format("{}({} left)  ", group.name, group.GetCount());
-            }
+            groupToString(group, to_log);
         }
         Output::LogLine(to_log, fmt::color::lemon_chiffon);
+    }
+
+    static void groupToString(const UnitGroup& group, std::string& to_log) {
+        if (group.IsAlive()) {
+            if (group.GetCount() > 5) {
+                to_log += fmt::format("{}({} left)  ", group.name, group.GetCount());
+            } else {
+                to_log += fmt::format("{}({} left [{}])", group.name, group.GetCount(), group.GetTopHp());
+            }
+        }
     }
 };
 
