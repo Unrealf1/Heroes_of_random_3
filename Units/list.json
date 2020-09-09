@@ -2,6 +2,8 @@
     "units": [
         "Knight",
         "Swordsmen",
-        "Archer"
+        "Archer",
+        "Dragon",
+        "Hobbit"
     ]
 }

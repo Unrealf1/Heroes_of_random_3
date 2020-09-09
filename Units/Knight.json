@@ -5,6 +5,6 @@
     "max_damage": 8,
     "min_damage": 2,
     "name": "Knight",
-    "speed": 1,
+    "speed": 2,
     "tags": []
 }
