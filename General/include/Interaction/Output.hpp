@@ -19,20 +19,18 @@ class Output {
 public:
     Output() = delete;
 
-    static inline void LogLine(
+    static inline void LogString(
             const std::string& message,
             const fmt::color& clr) {
         fmt::print(fg(clr), "{}", message);
         fmt::print("\n");
     }
 
-    inline static bool battle_logging = true;
     static void LogInBattle(const std::string& message,
                             const fmt::color& clr) {
-        if (!battle_logging) {return;}
         //should change to sleep_untill
         std::this_thread::sleep_for(minimum_battle_display_delay);
-        LogLine(message, clr);
+        LogString(message, clr);
     }
 
     static void LogAbility(const std::string& message) {
@@ -40,23 +38,16 @@ public:
     }
 
     static void LogInfo(const std::string& message) {
-        LogLine(message, fmt::color::white);
+        LogString(message, fmt::color::white);
     }
 
     static void LogAttack(
              const std::string& attackers,
              const std::string& defenders,
-             int64_t damage,
-             bool player_attacks = false
+             int64_t damage
     ) {
-        if (player_attacks) {
-            LogInBattle(fmt::format("Your {} dealed {} damage to enemy {}", attackers, damage, defenders),
-                        fmt::color::crimson);
-        } else {
-            LogInBattle(fmt::format("Enemy {} dealed {} damage to your {}", attackers, damage, defenders),
-                        fmt::color::crimson);
-        }
-
+        LogInBattle(fmt::format("{} dealed {} damage to {}", attackers, damage, defenders),
+                fmt::color::crimson);
     }
 
     static void LogRound(
@@ -90,15 +81,13 @@ public:
     }
 
     static void LogVictory() {
-        if (!battle_logging) {return;}
         const std::string& quote = rnd::sample(victory_quotes);
-        LogLine(fmt::format(quote), fmt::color::yellow);
+        LogString(fmt::format(quote), fmt::color::yellow);
     }
 
     static void LogLoss() {
-        if (!battle_logging) {return;}
         const std::string& quote = rnd::sample(loss_quotes);
-        LogLine(fmt::format(quote), fmt::color::blue);
+        LogString(fmt::format(quote), fmt::color::blue);
     }
 
 private:

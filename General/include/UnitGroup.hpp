@@ -51,7 +51,7 @@ public:
           tags(std::move(tags)),
           actions(std::move(actions)){}
 
-    int64_t Attack(UnitGroup& target, bool owned_by_player=false) {
+    int64_t Attack(UnitGroup& target) {
         for (auto& action : actions.before_attack) {
             action(this, army, &target);
         }
@@ -60,7 +60,7 @@ public:
         }
 
         auto dmg = doAttack(target);
-        Output::LogAttack(name, target.name, dmg, owned_by_player);
+        Output::LogAttack(name, target.name, dmg);
 
         for (auto& action : target.actions.after_attacked) {
             action(&target, army, this);

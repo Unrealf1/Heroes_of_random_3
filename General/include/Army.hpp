@@ -6,15 +6,14 @@
 #define HEROES_OF_RANDOM_ARMY_HPP
 
 #include <deque>
-#include <utility>
 #include <vector>
 #include "UnitGroup.hpp"
 
 
 class Army {
 public:
-    explicit Army(std::vector<UnitGroup> groups)
-    :composition(std::move(groups)) {
+    explicit Army(std::vector<UnitGroup>& groups)
+    :composition(groups) {
         for (auto& group : composition) {
             group.army = this;
         }
@@ -58,23 +57,7 @@ public:
         }
     }
 
-    std::vector<UnitGroup> composition;
-
-    void clear() {
-        for (size_t i = 0; i < composition.size(); ++i) {
-            if (!composition[i].IsAlive()) {
-                if (current_index == i) {
-                    Cycle();
-                }
-                if (current_index > i) {
-                    --current_index;
-                }
-                composition.erase(composition.begin() + static_cast<int64_t >(i));
-            }
-        }
-    }
-
-    bool is_player = false;
+    std::vector<UnitGroup>& composition;
 private:
     size_t current_index = 0;
 };

@@ -1,12 +1,12 @@
 #include "GameTypes/RandomBattles.hpp"
+#include "GameTypes/RogueLikeYakun.hpp"
 #include "Units/UnitLoader.hpp"
+#include "Interaction/Input.hpp"
 
 int main()  {
-
-    RandomGenerator::set_seed(140123);
-
+    RandomGenerator::set_seed(static_cast<unsigned int>(Input::AskForInt("Enter random seed")));
     UnitLoader loader("./Units");
     auto cloners = loader.getCloners();
-    RandomBattles rb(cloners, 400);
-    rb.Start();
+    RogueLike rl(cloners, 400, 20, 100);
+    rl.Start();
 }

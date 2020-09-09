@@ -21,6 +21,7 @@ public:
         std::string pattern = "{} for {}";
         std::vector<std::string> available_units(cloners.size());
         std::string offer;
+
         for (size_t i = 0; i < cloners.size(); ++i) {
             available_units[i] = cloners[i]->getReference().name;
             offer += fmt::format(pattern, cloners[i]->getReference().name, cloners[i]->getCost()) + "\n";
@@ -31,6 +32,7 @@ public:
             for (auto& f : cloners) {
                 if (f->getReference().name == choice) {
                     int64_t num = Input::AskForInt("How many?");
+
                     auto total_cost = num * f->getCost();
                     if (total_cost > current_money) {
                         Output::LogInfo("Sorry, not enough money");
@@ -78,6 +80,7 @@ private:
             enemy_cost -= std::max(50l, static_cast<int64_t>(0.1* static_cast<double>(enemy_cost)));
         }
     }
+
 
     std::vector<Cloner*> getAffordable(int64_t money) {
         std::vector<Cloner*> affordable_factories;
