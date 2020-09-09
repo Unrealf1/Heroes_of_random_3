@@ -9,9 +9,9 @@
 
 struct TagInsides {
     actions_t actions_before_attack;
-    actions_t actions_after_attack;
+    post_actions_t actions_after_attack;
     actions_t actions_before_attacked;
-    actions_t actions_after_attacked;
+    post_actions_t actions_after_attacked;
 };
 
 

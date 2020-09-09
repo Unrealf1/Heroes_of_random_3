@@ -16,13 +16,15 @@ class Army;
 class UnitGroup;
 
 using action_t = std::function<void(UnitGroup*, Army*, UnitGroup*)>;
+using post_action_t = std::function<void(UnitGroup*, Army*, UnitGroup*, int64_t)>;
 using actions_t = std::vector<action_t>;
+using post_actions_t = std::vector<post_action_t>;
 
 struct ActionPack {
     actions_t before_attack;
-    actions_t after_attack;
+    post_actions_t after_attack;
     actions_t before_attacked;
-    actions_t after_attacked;
+    post_actions_t after_attacked;
 };
 
 class UnitGroup {
@@ -63,10 +65,10 @@ public:
         Output::LogAttack(name, target.name, dmg, owned_by_player);
 
         for (auto& action : target.actions.after_attacked) {
-            action(&target, army, this);
+            action(&target, army, this, dmg);
         }
         for (auto& action : actions.after_attack) {
-            action(this, army, &target);
+            action(this, army, &target, dmg);
         }
         return dmg;
     }
@@ -128,6 +130,10 @@ public:
 
         // Last
         top_hp -= dmg;
+    }
+
+    void heal(int64_t amount) {
+        top_hp = std::min(hp, top_hp + amount);
     }
 private:
     int64_t count;

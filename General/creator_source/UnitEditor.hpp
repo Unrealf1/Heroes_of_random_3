@@ -27,14 +27,12 @@ public:
     explicit UnitEditor(const std::string& list_dir): list_path(fmt::format("{}/list.json", list_dir)) {
         std::ifstream ifs(list_path);
         if (ifs.is_open()) {
-            fmt::print("was good\n");
             json list;
             ifs >> list;
             for (const auto& name : list["units"]) {
                 cloners.push_back(UnitLoader::parseUnit(fmt::format("{}/{}.json", list_dir, name)));
             }
         } else {
-            fmt::print("was bad\n");
             std::ofstream ofs(list_path);
             json list;
             list["units"] = json::array();

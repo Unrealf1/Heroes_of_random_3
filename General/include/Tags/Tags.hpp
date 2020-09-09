@@ -10,6 +10,7 @@
 #include <map>
 #include "TagInsides.hpp"
 #include "Retaliation.hpp"
+#include "Vampiric.hpp"
 
 
 class TagContainer {
@@ -27,7 +28,8 @@ public:
     }
 
     inline const static std::map<tag_t, TagInsides> actual_tags = {
-            {Retaliation::name, Retaliation::insides}
+            {Retaliation::name, Retaliation::insides},
+            {Vampiric::name, Vampiric::insides}
     };
 };
 
