@@ -14,7 +14,7 @@ class Input {
 public:
     static std::string AskForLine(const std::string& message,
                            const fmt::color& clr) {
-        Output::LogString(message, clr);
+        Output::LogLine(message, clr);
         std::string answer;
         std::getline(std::cin, answer);
         //std::transform(answer.begin(), answer.end(), answer.begin(), ::tolower);
