@@ -37,6 +37,8 @@ public:
             enemy.Cycle();
 
             LogBattleStatus(player, enemy);
+            player.clear();
+            enemy.clear();
         }
         if (info != nullptr) {
             info->first_army_left = 0;

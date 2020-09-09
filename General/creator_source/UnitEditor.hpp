@@ -12,7 +12,7 @@
 #include <Interaction/Input.hpp>
 #include <cstdio>
 #include <Units/UnitSerializer.hpp>
-#include <Tags.hpp>
+#include <Tags/Tags.hpp>
 #include <fmt/ranges.h>
 #include "Battle.hpp"
 
@@ -112,7 +112,9 @@ private:
             left_1 += static_cast<size_t>(info.first_army_left);
             left_2 += static_cast<size_t>(info.second_army_left);
         }
-        return {left_1 / first_won, left_2 / (iterations - first_won), first_won};
+        return {first_won != 0 ? (left_1 / first_won) : 0,
+                first_won != iterations ? (left_2 / (iterations - first_won)) : 0,
+                first_won};
     }
 
     const std::string list_path;

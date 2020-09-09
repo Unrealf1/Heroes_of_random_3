@@ -6,7 +6,7 @@
 #define HEROES_OF_RANDOM_UNITLOADER_HPP
 
 #include "UnitCloner.hpp"
-#include "Tags.hpp"
+#include "Tags/Tags.hpp"
 
 #include <nlohmann/json.hpp>
 #include <vector>

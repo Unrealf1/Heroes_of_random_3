@@ -8,33 +8,9 @@
 #include <string>
 #include "UnitGroup.hpp"
 #include <map>
+#include "TagInsides.hpp"
+#include "Retaliation.hpp"
 
-
-
-struct TagInsides {
-    actions_t actions_before_attack;
-    actions_t actions_after_attack;
-    actions_t actions_before_attacked;
-    actions_t actions_after_attacked;
-};
-
-struct Retaliation {
-    inline const static std::string name = "retaliation";
-    inline const static TagInsides insides = {
-            {},
-            {},
-            {},
-            {action_t([](UnitGroup* me, Army* army, UnitGroup* target){
-                (void)army;
-                auto dmg = me->doAttack(*target);
-                Output::LogAbility(fmt::format(
-                        "{} retaliated upon {} and dealed {} damage!",
-                        me->name,
-                        target->name,
-                        dmg));
-            })}
-    };
-};
 
 class TagContainer {
 public:
