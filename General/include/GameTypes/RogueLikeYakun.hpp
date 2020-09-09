@@ -6,32 +6,33 @@
 #define HEROES_OF_RANDOM_ROGUELIKEYAKUN_HPP
 
 #include <cstdint>
+#include <utility>
 #include <vector>
 #include <string>
-#include "Units/UnitFactories.hpp"
+#include "Units/UnitCloner.hpp"
 #include "Interaction/Input.hpp"
 #include "Battle.hpp"
 
 class RogueLike {
 public:
     RogueLike(
-            const std::vector<BaseFactory*>& factories,
+            std::vector<Cloner*>  cloners,
             int64_t initial_money,
             int64_t shuffle_price
         )
-        : factories(factories),
+        : cloners(std::move(cloners)),
           initial_money(initial_money),
           shuffle_price(shuffle_price){}
     void Start() {
         std::string pattern = "{} for {}";
-        std::vector<std::string> available_units(factories.size() + 1);
+        std::vector<std::string> available_units(cloners.size() + 1);
 
         std::string offer;
-        for (size_t i = 0; i < factories.size(); ++i) {
-            available_units[i] = factories[i]->Create(1).name;
-            offer += fmt::format(pattern, factories[i]->Create(1).name, factories[i]->GetPrice()) + "\n";
+        for (size_t i = 0; i < cloners.size(); ++i) {
+            available_units[i] = cloners[i]->create(1).name;
+            offer += fmt::format(pattern, cloners[i]->create(1).name, cloners[i]->getCost()) + "\n";
         }
-        available_units[factories.size()] = "Shuffle";
+        available_units[cloners.size()] = "Shuffle";
         offer += fmt::format(pattern, "Shuffle", shuffle_price) + "\n";
 
         std::vector<UnitGroup> player_units;
@@ -45,10 +46,10 @@ public:
             Output::LogInfo(fmt::format("Stage {} started", stage));
             if (stage != 1) {
                 Output::LogInfo("Your army:");
-                Output::LogArmy(Army(player_units));
+                LogArmy(Army(player_units));
             }
             Output::LogInfo("Enemy army:");
-            Output::LogArmy(enemy);
+            LogArmy(enemy);
 
             do {
                 Output::LogInfo("");
@@ -77,15 +78,15 @@ public:
                         current_money -= shuffle_price;
                         RandomGenerator::shuffle(player_units);
                         Output::LogInfo("Your army:");
-                        Output::LogArmy(Army(player_units));
+                        LogArmy(Army(player_units));
                     }
                     continue;
                 }
 
-                for (auto &f : factories) {
-                    if (f->Create(1).name == choice) {
+                for (auto &f : cloners) {
+                    if (f->create(1).name == choice) {
                         int64_t num = Input::AskForInt("How many?");
-                        auto total_cost = num * f->GetPrice();
+                        auto total_cost = num * f->getCost();
                         if (total_cost > current_money) {
                             Output::LogInfo("Sorry, not enough money");
                             break;
@@ -96,7 +97,7 @@ public:
                                     std::vector<std::string>{"yes", "no", "y", "n"});
                             if (confirmation == "y" || confirmation == "yes") {
                                 current_money -= total_cost;
-                                player_units.push_back(f->Create(num));
+                                player_units.push_back(f->create(num));
                             }
                             break;
                         }
@@ -112,14 +113,14 @@ public:
         }
     }
 private:
-    const std::vector<BaseFactory*> factories;
+    const std::vector<Cloner*> cloners;
     const int64_t initial_money;
     const int64_t shuffle_price;
 
-    std::vector<BaseFactory*> getAffordable(int64_t money) {
-        std::vector<BaseFactory*> affordable_factories;
-        for (auto& f : factories) {
-            if (f->GetPrice() <= money) {
+    std::vector<Cloner*> getAffordable(int64_t money) {
+        std::vector<Cloner*> affordable_factories;
+        for (auto& f : cloners) {
+            if (f->getCost() <= money) {
                 affordable_factories.push_back(f);
             }
         }
@@ -131,15 +132,28 @@ private:
         std::vector<UnitGroup> dudes;
         while (!affordable.empty()) {
             auto& choice = RandomGenerator::sample(affordable);
-            auto num = RandomGenerator::randint(1, cost / choice->GetPrice() + 1);
+            auto num = RandomGenerator::randint(1, cost / choice->getCost() + 1);
             if (num == 0) {
                 continue;
             }
-            dudes.push_back(choice->Create(num));
-            cost -= choice->GetPrice() * num;
+            dudes.push_back(choice->create(num));
+            cost -= choice->getCost() * num;
             affordable = getAffordable(cost);
         }
         return dudes;
+    }
+
+    static void LogArmy(const Army& army) {
+        std::string to_log;
+        for (size_t i = 0; i < army.composition.size(); ++i) {
+            auto& group = army.composition[
+                    (i + army.GetCurrentIndex()) % army.composition.size()
+            ];
+            if (group.IsAlive()) {
+                to_log += fmt::format("{}({} left)  ", group.name, group.GetCount());
+            }
+        }
+        Output::LogString(to_log, fmt::color::white);
     }
 };
 
