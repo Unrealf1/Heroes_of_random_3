@@ -108,7 +108,7 @@ private:
             if (group.GetCount() > 5) {
                 to_log += fmt::format("{}({} left)  ", group.name, group.GetCount());
             } else {
-                to_log += fmt::format("{}({} left [{}])", group.name, group.GetCount(), group.GetTopHp());
+                to_log += fmt::format("{}({} left [{}/{}])", group.name, group.GetCount(), group.GetTopHp(), group.hp);
             }
         }
     }
