@@ -47,10 +47,12 @@ public:
         });
         Input::ChoiceActionWithFinish(
                 dispatcher,
-                fmt::format(
-                        "You have {} money. Choose units to buy. Available:\n{}",
-                        current_money,
-                        offer),
+                std::function<std::string(void)>([&]{
+                    return fmt::format(
+                            "You have {} money. Choose units to buy. Available:\n{}",
+                            current_money,
+                            offer);
+                }),
                 fmt::color::white,
                 available_units);
 

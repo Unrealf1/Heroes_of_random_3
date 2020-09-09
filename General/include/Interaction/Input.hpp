@@ -69,7 +69,7 @@ public:
     }
 
     static bool Confirm(const std::string& message,
-                        const fmt::color& clr) {
+                        const fmt::color& clr = fmt::color::white) {
         std::string confirmation = Input::AskForChoice(
                 message,
                 clr,
@@ -77,7 +77,8 @@ public:
         return confirmation == "y" || confirmation == "yes";
     }
 
-    static void ChoiceActionWithFinish(std::function<void(std::string)>& dispatcher,
+    using dispatcher_t = std::function<void(std::string)>;
+    static void ChoiceActionWithFinish(dispatcher_t& dispatcher,
                              const std::string& message,
                              const fmt::color& clr,
                              const std::vector<std::string>& choices,
@@ -91,6 +92,27 @@ public:
             dispatcher(answer);
             answer = AskForChoiceWithFinish(
                     message,
+                    clr,
+                    choices,
+                    backup);
+        }
+    }
+
+    using message_supplier = std::function<std::string(void)>;
+    static void ChoiceActionWithFinish(dispatcher_t& dispatcher,
+                                       const message_supplier& supplier,
+                                       const fmt::color& clr,
+                                       const std::vector<std::string>& choices,
+                                       const std::string& backup = "") {
+        std::string answer = AskForChoiceWithFinish(
+                supplier(),
+                clr,
+                choices,
+                backup);
+        while (answer != "finish") {
+            dispatcher(answer);
+            answer = AskForChoiceWithFinish(
+                    supplier(),
                     clr,
                     choices,
                     backup);

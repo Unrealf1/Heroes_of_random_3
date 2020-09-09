@@ -1,0 +1,10 @@
+{
+    "armor": 1,
+    "cost": 12,
+    "hp": 20,
+    "max_damage": 4,
+    "min_damage": 3,
+    "name": "Swordsmen",
+    "speed": 4,
+    "tags": []
+}

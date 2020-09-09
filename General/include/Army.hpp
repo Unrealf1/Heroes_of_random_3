@@ -9,11 +9,14 @@
 #include <vector>
 #include "UnitGroup.hpp"
 
+
 class Army {
 public:
     explicit Army(std::vector<UnitGroup>& groups)
     :composition(groups) {
-
+        for (auto& group : composition) {
+            group.army = this;
+        }
     }
 
     UnitGroup& getCurrent() {
@@ -48,8 +51,13 @@ public:
         return current_index;
     }
 
-    std::vector<UnitGroup>& composition;
+    ~Army() {
+        for (auto& group : composition) {
+            group.army = nullptr;
+        }
+    }
 
+    std::vector<UnitGroup>& composition;
 private:
     size_t current_index = 0;
 };

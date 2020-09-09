@@ -6,6 +6,7 @@
 #define HEROES_OF_RANDOM_UNITLOADER_HPP
 
 #include "UnitCloner.hpp"
+#include "Tags.hpp"
 
 #include <nlohmann/json.hpp>
 #include <vector>
@@ -19,14 +20,12 @@ public:
     explicit UnitLoader(const std::string& list_dir): list_path(fmt::format("{}/list.json", list_dir)) {
         std::ifstream ifs(list_path);
         if (ifs.is_open()) {
-            fmt::print("was good\n");
             json list;
             ifs >> list;
             for (const auto& name : list["units"]) {
                 cloners.push_back(UnitLoader::parseUnit(fmt::format("{}/{}.json", list_dir, name)));
             }
         } else {
-            fmt::print("was bad\n");
             std::ofstream ofs(list_path);
             json list;
             list["units"] = json::array();
@@ -45,7 +44,6 @@ public:
     }
 
     static Cloner* parseUnit(const std::string& filepath) {
-        std::cout << "PARSING!!" << std::endl;
         std::ifstream file(filepath);
         json js;
         file >> js;
@@ -56,6 +54,11 @@ public:
         int64_t speed = js["speed"];
         std::string name = js["name"];
         int64_t cost = js["cost"];
+        std::vector<TagContainer::tag_t> tags = js["tags"];
+        ActionPack actions;
+        for (const auto& tag : tags) {
+            TagContainer::populateActions(tag, actions);
+        }
         return new Cloner(
                 UnitGroup(
                 hp,
@@ -63,7 +66,10 @@ public:
                 max_damage,
                 armor,
                 speed,
-                name
+                name,
+                0,
+                tags,
+                actions
             ),
             cost
         );

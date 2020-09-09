@@ -12,6 +12,8 @@
 #include <Interaction/Input.hpp>
 #include <cstdio>
 #include <Units/UnitSerializer.hpp>
+#include <Tags.hpp>
+#include <fmt/ranges.h>
 
 class UnitEditor {
 public:
@@ -90,17 +92,18 @@ private:
 
     bool editUnit(Cloner* cloner) {
         UnitGroup& ref = cloner->reference;
-        Output::LogInfo(fmt::format("currently stats are:\n"
-                                    "hp={}, min damage = {}, max damage = {}, armor = {}, speed = {}, name = {}, cost = {}",
+        Output::LogInfo(fmt::format(FMT_STRING(
+                                            "currently stats are:\nhp={}, min damage = {}, max damage = {}, armor = {}, speed = {}, name = {}, cost = {}\nTags are: {}"),
                                     ref.hp,
                                     ref.min_damage,
                                     ref.max_damage,
                                     ref.armor,
                                     ref.speed,
                                     ref.name,
-                                    cloner->cost));
+                                    cloner->cost,
+                                    ref.tags));
         bool edited = false;
-        std::vector<std::string> choices{"hp", "min damage", "max damage", "armor", "speed", "name", "cost"};
+        std::vector<std::string> choices{"hp", "min damage", "max damage", "armor", "speed", "name", "cost", "tags"};
         std::function<void(std::string)> dispatcher([cloner, &ref, &edited](std::string parameter){
             edited = true;
             if (parameter == "hp") {
@@ -117,6 +120,27 @@ private:
                 ref.name = Input::AskForLine("Enter new name", fmt::color::white);
             } else if (parameter == "cost") {
                 cloner->cost = Input::AskForInt("Enter new value");
+            } else if (parameter == "tags") {
+                if (Input::Confirm(R"(Enter "yes" to add tags or "no" to remove)")) {
+                    auto& tags = TagContainer::actual_tags;
+                    std::vector<TagContainer::tag_t> tag_names;
+                    tag_names.reserve(tags.size());
+                    for (auto& pr : tags) {
+                        tag_names.push_back(pr.first);
+                    }
+
+                    Input::dispatcher_t dispatcher([cloner](std::string choice){
+                        cloner->reference.tags.push_back(choice);
+                    });
+                    Input::ChoiceActionWithFinish(dispatcher, "Which tag?", fmt::color::wheat, tag_names);
+                } else {
+                    Input::dispatcher_t dispatcher([&ref](std::string choice){
+                        auto it = ref.tags.begin();
+                        for (; *it != choice; ++it) {}
+                        ref.tags.erase(it);
+                    });
+                    Input::ChoiceActionWithFinish(dispatcher, "Which tag?", fmt::color::wheat, cloner->reference.tags);
+                }
             }
         });
         Input::ChoiceActionWithFinish(

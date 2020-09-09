@@ -24,6 +24,7 @@ public:
         js["speed"] = cloner.getReference().speed;
         js["name"] = cloner.getReference().name;
         js["cost"] = cloner.getCost();
+        js["tags"] = cloner.getReference().tags;
         std::ofstream off(fmt::format("{}/{}.json", dir_path, cloner.getReference().name));
         off << js.dump(4);
     }
