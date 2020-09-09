@@ -12,6 +12,8 @@
 using rnd = RandomGenerator;
 
 class UnitGroup {
+    friend class Cloner;
+    friend class UnitSerializer;
 public:
     UnitGroup(
             int64_t hp,
@@ -76,13 +78,13 @@ public:
         return top_hp;
     }
 
-    const int64_t hp;
-    const int64_t min_damage;
-    const int64_t max_damage;
-    const int64_t armor;
-    const int64_t speed;
+    int64_t hp;
+    int64_t min_damage;
+    int64_t max_damage;
+    int64_t armor;
+    int64_t speed;
 
-    const std::string name;
+    std::string name;
 
 private:
     int64_t count;

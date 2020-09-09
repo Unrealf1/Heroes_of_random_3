@@ -24,7 +24,7 @@ set_project_warnings(project_warnings)
 #include(cmake/Doxygen.cmake)
 #enable_doxygen()
 
-set(CONAN_EXTRA_REQUIRES "spdlog/1.5.0" "fmt/6.2.0")
+set(CONAN_EXTRA_REQUIRES "spdlog/1.5.0" "fmt/6.2.0" "nlohmann_json/3.7.3")
 include(cmake/Conan.cmake)
 run_conan()
 
