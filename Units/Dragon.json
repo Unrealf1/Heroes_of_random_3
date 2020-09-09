@@ -1,0 +1,10 @@
+{
+    "armor": 0,
+    "cost": 500,
+    "hp": 500,
+    "max_damage": 70,
+    "min_damage": 30,
+    "name": "Dragon",
+    "speed": 1,
+    "tags": []
+}

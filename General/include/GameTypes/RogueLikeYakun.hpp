@@ -18,11 +18,13 @@ public:
     RogueLike(
             std::vector<Cloner*>  cloners,
             int64_t initial_money,
-            int64_t shuffle_price
+            int64_t shuffle_price,
+            int64_t enemy_budget_step
         )
         : cloners(std::move(cloners)),
           initial_money(initial_money),
-          shuffle_price(shuffle_price){}
+          shuffle_price(shuffle_price),
+          enemy_budget_step(enemy_budget_step){}
     void Start() {
         std::string pattern = "{} for {}";
         std::vector<std::string> available_units(cloners.size() + 1);
@@ -39,7 +41,7 @@ public:
         std::string choice;
         int64_t current_money = 0;
         for (int stage = 1;; ++stage) {
-            auto enemy_dudes = generateArmy(initial_money*stage);
+            auto enemy_dudes = generateArmy(initial_money + enemy_budget_step*(stage - 1));
             Army enemy(enemy_dudes);
             current_money += initial_money;
 
@@ -116,6 +118,7 @@ private:
     const std::vector<Cloner*> cloners;
     const int64_t initial_money;
     const int64_t shuffle_price;
+    const int64_t enemy_budget_step;
 
     std::vector<Cloner*> getAffordable(int64_t money) {
         std::vector<Cloner*> affordable_factories;

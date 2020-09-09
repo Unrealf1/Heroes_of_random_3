@@ -7,6 +7,6 @@ int main()  {
     RandomGenerator::set_seed(static_cast<unsigned int>(Input::AskForInt("Enter random seed")));
     UnitLoader loader("./Units");
     auto cloners = loader.getCloners();
-    RogueLike rl(cloners, 400, 20);
+    RogueLike rl(cloners, 400, 20, 100);
     rl.Start();
 }
