@@ -106,13 +106,13 @@ private:
             Army army1(groups1);
             Army army2(groups2);
             TestInfo info;
-            if (Battle::Start(army1, army2), &info) {
+            if (Battle::Start(army1, army2, &info)) {
                 ++cnt;
             }
             left_1 += info.first_army_left;
             left_2 += info.second_army_left;
         }
-        double diterations = static_cast<double>(iterations);
+        auto diterations = static_cast<double>(iterations);
         return {static_cast<double>(left_1) / diterations, static_cast<double>(left_2) / diterations, cnt};
     }
 
