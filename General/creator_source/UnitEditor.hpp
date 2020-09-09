@@ -17,8 +17,8 @@
 #include "Battle.hpp"
 
 struct TestData {
-    double avg_left_1;
-    double avg_left_2;
+    size_t avg_left_1;
+    size_t avg_left_2;
     size_t won_1;
 };
 
@@ -97,9 +97,9 @@ public:
 private:
     // Returns total wins of subject 1
     static TestData testCase(Cloner* subject1, Cloner* subject2, int64_t num_1, int64_t num_2, size_t iterations) {
-        size_t cnt = 0;
-        int64_t left_1 = 0;
-        int64_t left_2 = 0;
+        size_t first_won = 0;
+        size_t left_1 = 0;
+        size_t left_2 = 0;
         for (size_t i = 0; i < iterations; ++i) {
             std::vector<UnitGroup> groups1{subject1->create(num_1)};
             std::vector<UnitGroup> groups2{subject2->create(num_2)};
@@ -107,13 +107,12 @@ private:
             Army army2(groups2);
             TestInfo info;
             if (Battle::Start(army1, army2, &info)) {
-                ++cnt;
+                ++first_won;
             }
-            left_1 += info.first_army_left;
-            left_2 += info.second_army_left;
+            left_1 += static_cast<size_t>(info.first_army_left);
+            left_2 += static_cast<size_t>(info.second_army_left);
         }
-        auto diterations = static_cast<double>(iterations);
-        return {static_cast<double>(left_1) / diterations, static_cast<double>(left_2) / diterations, cnt};
+        return {left_1 / first_won, left_2 / (iterations - first_won), first_won};
     }
 
     const std::string list_path;
