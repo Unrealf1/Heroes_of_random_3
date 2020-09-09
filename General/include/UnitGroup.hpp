@@ -39,19 +39,19 @@ public:
             int64_t count=0,
             std::vector<std::string> tags = {},
             ActionPack actions = {}
-        )
-        : hp(hp),
-          min_damage(min_damage),
-          max_damage(max_damage),
-          armor(armor),
-          speed(speed),
-          name(std::move(name)),
-          count(count),
-          top_hp(hp),
-          tags(std::move(tags)),
-          actions(std::move(actions)){}
+    )
+            : hp(hp),
+              min_damage(min_damage),
+              max_damage(max_damage),
+              armor(armor),
+              speed(speed),
+              name(std::move(name)),
+              count(count),
+              top_hp(hp),
+              tags(std::move(tags)),
+              actions(std::move(actions)){}
 
-    int64_t Attack(UnitGroup& target) {
+    int64_t Attack(UnitGroup& target, bool owned_by_player=false) {
         for (auto& action : actions.before_attack) {
             action(this, army, &target);
         }
@@ -60,7 +60,7 @@ public:
         }
 
         auto dmg = doAttack(target);
-        Output::LogAttack(name, target.name, dmg);
+        Output::LogAttack(name, target.name, dmg, owned_by_player);
 
         for (auto& action : target.actions.after_attacked) {
             action(&target, army, this);

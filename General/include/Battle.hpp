@@ -11,11 +11,19 @@
 class Battle {
 public:
     static bool Start(Army& player, Army& enemy) {
+        player.is_player = true;
         while(!player.Defeated() && !enemy.Defeated()) {
             auto& player_top = player.getCurrent();
             auto& enemy_top = enemy.getCurrent();
 
-            if (player_top.speed > enemy_top.speed) {
+            if (player_top.speed == enemy_top.speed) {
+                bool coin_flip = RandomGenerator::randint(2);
+                if (coin_flip) {
+                    Round(player_top, enemy_top);
+                } else {
+                    Round(enemy_top, player_top);
+                }
+            } else if (player_top.speed > enemy_top.speed) {
                 Round(player_top, enemy_top);
             } else {
                 Round(enemy_top, player_top);
@@ -37,8 +45,8 @@ private:
     static void Round(UnitGroup& first, UnitGroup& second) {
         auto were_first = first.GetCount();
         auto were_second = second.GetCount();
-        first.Attack(second);
-        second.Attack(first);
+        first.Attack(second, first.army->is_player);
+        second.Attack(first, second.army->is_player);
         Output::LogRound(
                 first.name,
                 second.name,
@@ -58,6 +66,8 @@ private:
 
     // Should use stringbuilder
     static void LogBattleStatus(const Army& player, const Army& enemy) {
+        if (!Output::battle_logging) {return;}
+
         std::string to_log = "Current disposition:\nPlayer: ";
         for (size_t i = 0; i < player.composition.size(); ++i) {
             auto& group = player.composition[
@@ -76,7 +86,7 @@ private:
                 to_log += fmt::format("{}({} left)  ", group.name, group.GetCount());
             }
         }
-        Output::LogString(to_log, fmt::color::lemon_chiffon);
+        Output::LogLine(to_log, fmt::color::lemon_chiffon);
     }
 };
 

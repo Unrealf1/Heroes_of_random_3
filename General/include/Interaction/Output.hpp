@@ -19,18 +19,20 @@ class Output {
 public:
     Output() = delete;
 
-    static inline void LogString(
+    static inline void LogLine(
             const std::string& message,
             const fmt::color& clr) {
         fmt::print(fg(clr), "{}", message);
         fmt::print("\n");
     }
 
+    inline static bool battle_logging = true;
     static void LogInBattle(const std::string& message,
                             const fmt::color& clr) {
+        if (!battle_logging) {return;}
         //should change to sleep_untill
         std::this_thread::sleep_for(minimum_battle_display_delay);
-        LogString(message, clr);
+        LogLine(message, clr);
     }
 
     static void LogAbility(const std::string& message) {
@@ -38,16 +40,23 @@ public:
     }
 
     static void LogInfo(const std::string& message) {
-        LogString(message, fmt::color::white);
+        LogLine(message, fmt::color::white);
     }
 
     static void LogAttack(
-             const std::string& attackers,
-             const std::string& defenders,
-             int64_t damage
+            const std::string& attackers,
+            const std::string& defenders,
+            int64_t damage,
+            bool player_attacks = false
     ) {
-        LogInBattle(fmt::format("{} dealed {} damage to {}", attackers, damage, defenders),
-                fmt::color::crimson);
+        if (player_attacks) {
+            LogInBattle(fmt::format("Your {} dealed {} damage to enemy {}", attackers, damage, defenders),
+                        fmt::color::crimson);
+        } else {
+            LogInBattle(fmt::format("Enemy {} dealed {} damage to your {}", attackers, damage, defenders),
+                        fmt::color::crimson);
+        }
+
     }
 
     static void LogRound(
@@ -57,7 +66,7 @@ public:
             const int64_t were_defenders,
             const int64_t died_attackers,
             const int64_t died_defenders
-            ) {
+    ) {
         const std::string& quote = rnd::sample(attack_quotes);
         LogInBattle(
                 fmt::format(
@@ -68,7 +77,7 @@ public:
                         were_defenders,
                         died_attackers,
                         died_defenders),
-             fmt::color::crimson);
+                fmt::color::crimson);
     }
 
     static void LogDeath(const std::string& name) {
@@ -81,13 +90,15 @@ public:
     }
 
     static void LogVictory() {
+        if (!battle_logging) {return;}
         const std::string& quote = rnd::sample(victory_quotes);
-        LogString(fmt::format(quote), fmt::color::yellow);
+        LogLine(fmt::format(quote), fmt::color::yellow);
     }
 
     static void LogLoss() {
+        if (!battle_logging) {return;}
         const std::string& quote = rnd::sample(loss_quotes);
-        LogString(fmt::format(quote), fmt::color::blue);
+        LogLine(fmt::format(quote), fmt::color::blue);
     }
 
 private:

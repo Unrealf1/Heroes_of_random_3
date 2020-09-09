@@ -156,7 +156,7 @@ private:
                 to_log += fmt::format("{}({} left)  ", group.name, group.GetCount());
             }
         }
-        Output::LogString(to_log, fmt::color::white);
+        Output::LogLine(to_log, fmt::color::white);
     }
 };
 

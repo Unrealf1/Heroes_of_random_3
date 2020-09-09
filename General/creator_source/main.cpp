@@ -24,3 +24,4 @@ int main() {
         }
     });
     Input::ChoiceActionWithFinish(dispatcher, "What would you like to do?", fmt::color::wheat, options);
+}
