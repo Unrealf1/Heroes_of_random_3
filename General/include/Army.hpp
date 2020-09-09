@@ -13,7 +13,7 @@
 
 class Army {
 public:
-    explicit Army(std::vector<UnitGroup> groups)
+    explicit Army(std::vector<UnitGroup> groups = {})
             :composition(std::move(groups)) {
         for (auto& group : composition) {
             group.army = this;
