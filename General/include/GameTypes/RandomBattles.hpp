@@ -6,66 +6,63 @@
 #define HEROES_OF_RANDOM_RANDOMBATTLES_HPP
 
 #include <cstdint>
+#include <utility>
 #include <vector>
 #include <string>
-#include "Units/UnitFactories.hpp"
+#include "Units/UnitCloner.hpp"
 #include "Interaction/Input.hpp"
 #include "Battle.hpp"
 
 class RandomBattles {
 public:
-    RandomBattles(const std::vector<BaseFactory*>& factories, int64_t initial_money)
-    : factories(factories), initial_money(initial_money){}
+    RandomBattles(std::vector<Cloner*> cloners, int64_t initial_money)
+    : cloners(std::move(cloners)), initial_money(initial_money){}
     void Start() {
         std::string pattern = "{} for {}";
-        std::vector<std::string> available_units(factories.size() + 1);
+        std::vector<std::string> available_units(cloners.size());
         std::string offer;
-        for (size_t i = 0; i < factories.size(); ++i) {
-            available_units[i] = factories[i]->Create(1).name;
-            offer += fmt::format(pattern, factories[i]->Create(1).name, factories[i]->GetPrice()) + "\n";
+
+        for (size_t i = 0; i < cloners.size(); ++i) {
+            available_units[i] = cloners[i]->getReference().name;
+            offer += fmt::format(pattern, cloners[i]->getReference().name, cloners[i]->getCost()) + "\n";
         }
         std::vector<UnitGroup> playerUnits;
-        std::string choice;
         auto current_money = initial_money;
-        do {
-            Output::LogInfo("");
-            choice = Input::AskForChoiceWithFinish(
-                    fmt::format(
-                            "You have {} money. Choose units to buy. Available:\n{}",
-                            current_money,
-                            offer),
-                    fmt::color::white,
-                    available_units,
-                    "Please choose one of the given options"
-            );
-
-            for (auto& f : factories) {
-                if (f->Create(1).name == choice) {
+        std::function<void(std::string)> dispatcher([this, &current_money, &playerUnits](std::string choice){
+            for (auto& f : cloners) {
+                if (f->getReference().name == choice) {
                     int64_t num = Input::AskForInt("How many?");
-                    auto total_cost = num * f->GetPrice();
+
+                    auto total_cost = num * f->getCost();
                     if (total_cost > current_money) {
                         Output::LogInfo("Sorry, not enough money");
-                        break;
                     } else {
-                        auto confirmation = Input::AskForChoice(
-                                fmt::format("Total cost is {}. Are you sure? (yes/no)", total_cost),
-                                fmt::color::white,
-                                std::vector<std::string>{"yes", "no", "y", "n"});
-                        if (confirmation == "y" || confirmation == "yes") {
+                        if (Input::Confirm(fmt::format("Total cost is {}. Are you sure? (yes/no)", total_cost),
+                                           fmt::color::white)) {
                             current_money -= total_cost;
-                            playerUnits.push_back(f->Create(num));
+                            playerUnits.push_back(f->create(num));
                         }
-                        break;
                     }
+                    break;
                 }
             }
+        });
+        Input::ChoiceActionWithFinish(
+                dispatcher,
+                std::function<std::string(void)>([&]{
+                    return fmt::format(
+                            "You have {} money. Choose units to buy. Available:\n{}",
+                            current_money,
+                            offer);
+                }),
+                fmt::color::white,
+                available_units);
 
-        } while(choice != "finish");
         Army army(playerUnits);
         Play(army);
     }
 private:
-    const std::vector<BaseFactory*> factories;
+    const std::vector<Cloner*> cloners;
     const int64_t initial_money;
 
     void Play(Army& player) {
@@ -84,10 +81,11 @@ private:
         }
     }
 
-    std::vector<BaseFactory*> getAffordable(int64_t money) {
-        std::vector<BaseFactory*> affordable_factories;
-        for (auto& f : factories) {
-            if (f->GetPrice() <= money) {
+
+    std::vector<Cloner*> getAffordable(int64_t money) {
+        std::vector<Cloner*> affordable_factories;
+        for (auto& f : cloners) {
+            if (f->getCost() <= money) {
                 affordable_factories.push_back(f);
             }
         }
@@ -99,12 +97,12 @@ private:
         std::vector<UnitGroup> dudes;
         while (!affordable.empty()) {
             auto& choice = RandomGenerator::sample(affordable);
-            auto num = RandomGenerator::randint(1, cost / choice->GetPrice() + 1);
+            auto num = RandomGenerator::randint(1, cost / choice->getCost() + 1);
             if (num == 0) {
                 continue;
             }
-            dudes.push_back(choice->Create(num));
-            cost -= choice->GetPrice() * num;
+            dudes.push_back(choice->create(num));
+            cost -= choice->getCost() * num;
             affordable = getAffordable(cost);
         }
         return dudes;

@@ -1,0 +1,12 @@
+{
+    "armor": 2,
+    "cost": 20,
+    "hp": 30,
+    "max_damage": 5,
+    "min_damage": 4,
+    "name": "Knight",
+    "speed": 2,
+    "tags": [
+        "retaliation"
+    ]
+}

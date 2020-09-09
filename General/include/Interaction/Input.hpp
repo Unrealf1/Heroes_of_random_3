@@ -8,6 +8,7 @@
 #include "Output.hpp"
 #include <iostream>
 #include <algorithm>
+#include <map>
 
 class Input {
 public:
@@ -34,7 +35,11 @@ public:
                                     const std::string& backup = "") {
 
         std::string answer = AskForLine(message, clr);
-        const std::string& real_backup = backup.empty() ? message : backup;
+        std::string all_choices;
+        for (const auto& ch : choices) {
+            all_choices += ch + '\n';
+        }
+        const std::string& real_backup = backup.empty() ? ("Options are:\n" + all_choices) : backup;
         bool need_leave = false;
         for (auto& ch : choices) {
             if (ch == answer) {
@@ -61,6 +66,57 @@ public:
         new_choices.emplace_back("finish");
         Output::LogInfo("Type \"finish\" if you wish to exit this choice");
         return AskForChoice(message, clr, new_choices, backup);
+    }
+
+    static bool Confirm(const std::string& message,
+                        const fmt::color& clr = fmt::color::white) {
+        std::string confirmation = Input::AskForChoice(
+                message,
+                clr,
+                std::vector<std::string>{"yes", "no", "y", "n"});
+        return confirmation == "y" || confirmation == "yes";
+    }
+
+    using dispatcher_t = std::function<void(std::string)>;
+    static void ChoiceActionWithFinish(dispatcher_t& dispatcher,
+                             const std::string& message,
+                             const fmt::color& clr,
+                             const std::vector<std::string>& choices,
+                             const std::string& backup = "") {
+        std::string answer = AskForChoiceWithFinish(
+                message,
+                clr,
+                choices,
+                backup);
+        while (answer != "finish") {
+            dispatcher(answer);
+            answer = AskForChoiceWithFinish(
+                    message,
+                    clr,
+                    choices,
+                    backup);
+        }
+    }
+
+    using message_supplier = std::function<std::string(void)>;
+    static void ChoiceActionWithFinish(dispatcher_t& dispatcher,
+                                       const message_supplier& supplier,
+                                       const fmt::color& clr,
+                                       const std::vector<std::string>& choices,
+                                       const std::string& backup = "") {
+        std::string answer = AskForChoiceWithFinish(
+                supplier(),
+                clr,
+                choices,
+                backup);
+        while (answer != "finish") {
+            dispatcher(answer);
+            answer = AskForChoiceWithFinish(
+                    supplier(),
+                    clr,
+                    choices,
+                    backup);
+        }
     }
 
 private:

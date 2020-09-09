@@ -22,7 +22,7 @@ public:
             }
             player.Cycle();
             enemy.Cycle();
-            Output::LogBattleStatus(player, enemy);
+            LogBattleStatus(player, enemy);
         }
         if (player.Defeated()) {
             Output::LogLoss();
@@ -37,10 +37,8 @@ private:
     static void Round(UnitGroup& first, UnitGroup& second) {
         auto were_first = first.GetCount();
         auto were_second = second.GetCount();
-        auto dmg1 = first.Attack(second);
-        Output::LogAttack(first.name, second.name, dmg1);
-        auto dmg2 = second.Attack(first);
-        Output::LogAttack(second.name, first.name, dmg2);
+        first.Attack(second);
+        second.Attack(first);
         Output::LogRound(
                 first.name,
                 second.name,
@@ -56,6 +54,29 @@ private:
         if (!second.IsAlive()) {
             Output::LogDeath(second.name);
         }
+    }
+
+    // Should use stringbuilder
+    static void LogBattleStatus(const Army& player, const Army& enemy) {
+        std::string to_log = "Current disposition:\nPlayer: ";
+        for (size_t i = 0; i < player.composition.size(); ++i) {
+            auto& group = player.composition[
+                    (i + player.GetCurrentIndex()) % player.composition.size()
+            ];
+            if (group.IsAlive()) {
+                to_log += fmt::format("{}({} left)  ", group.name, group.GetCount());
+            }
+        }
+        to_log += "\nEnemy: ";
+        for (size_t i = 0; i < enemy.composition.size(); ++i) {
+            auto& group = enemy.composition[
+                    (i + enemy.GetCurrentIndex()) % enemy.composition.size()
+            ];
+            if (group.IsAlive()) {
+                to_log += fmt::format("{}({} left)  ", group.name, group.GetCount());
+            }
+        }
+        Output::LogString(to_log, fmt::color::lemon_chiffon);
     }
 };
 

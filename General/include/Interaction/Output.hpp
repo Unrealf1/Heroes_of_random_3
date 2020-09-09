@@ -12,7 +12,6 @@
 #include <thread>
 
 #include "Random.hpp"
-#include "Army.hpp"
 
 using rnd = RandomGenerator;
 
@@ -23,7 +22,7 @@ public:
     static inline void LogString(
             const std::string& message,
             const fmt::color& clr) {
-        fmt::print(fg(clr), message);
+        fmt::print(fg(clr), "{}", message);
         fmt::print("\n");
     }
 
@@ -32,6 +31,10 @@ public:
         //should change to sleep_untill
         std::this_thread::sleep_for(minimum_battle_display_delay);
         LogString(message, clr);
+    }
+
+    static void LogAbility(const std::string& message) {
+        LogInBattle(message, fmt::color::orange);
     }
 
     static void LogInfo(const std::string& message) {
@@ -85,31 +88,6 @@ public:
     static void LogLoss() {
         const std::string& quote = rnd::sample(loss_quotes);
         LogString(fmt::format(quote), fmt::color::blue);
-    }
-
-    static std::string ArmyToString(const Army& army) {
-        std::string result;
-        for (size_t i = 0; i < army.composition.size(); ++i) {
-            auto& group = army.composition[
-                    (i + army.GetCurrentIndex()) % army.composition.size()
-            ];
-            if (group.IsAlive()) {
-                result += fmt::format("{}({} left)  ", group.name, group.GetCount());
-            }
-        }
-        return result;
-    }
-
-    static void LogArmy(const Army& army) {
-        LogString(ArmyToString(army), fmt::color::white);
-    }
-
-    static void LogBattleStatus(const Army& player, const Army& enemy) {
-        std::string to_log = "Current disposition:\nPlayer: ";
-        to_log += ArmyToString(player);
-        to_log += "\nEnemy: ";
-        to_log += ArmyToString(enemy);
-        LogString(to_log, fmt::color::orange);
     }
 
 private:
