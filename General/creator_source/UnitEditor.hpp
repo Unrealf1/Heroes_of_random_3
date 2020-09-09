@@ -16,6 +16,12 @@
 #include <fmt/ranges.h>
 #include "Battle.hpp"
 
+struct TestData {
+    double avg_left_1;
+    double avg_left_2;
+    size_t won_1;
+};
+
 class UnitEditor {
 public:
     explicit UnitEditor(const std::string& list_dir): list_path(fmt::format("{}/list.json", list_dir)) {
@@ -54,27 +60,32 @@ public:
     }
 
     void test() {
-        Cloner* subject1 = askForUnit("Choose first unit");
-        Cloner* subject2 = askForUnit("Choose second unit");
         Output::battle_logging = false;
-        bool repeat = true;
-        while (repeat) {
-            size_t total_tests = 100;
-            int64_t first_num = Input::AskForInt(fmt::format("How many {}?", subject1->getReference().name));
-            int64_t second_num = Input::AskForInt(fmt::format("How many {}?", subject2->getReference().name));
-            size_t cnt = testCase(subject1, subject2, first_num, second_num, total_tests);
+        bool in_test = true;
+        while(in_test) {
+            Cloner* subject1 = askForUnit("Choose first unit");
+            Cloner* subject2 = askForUnit("Choose second unit");
+            bool repeat = true;
+            while (repeat) {
+                size_t total_tests = 1000;
+                int64_t first_num = Input::AskForInt(fmt::format("How many {}?", subject1->getReference().name));
+                int64_t second_num = Input::AskForInt(fmt::format("How many {}?", subject2->getReference().name));
 
-            Output::LogLine(fmt::format(
-                    "Results for test case {} ({} worth {} money) vs {} ({} worth {} money):\n"
-                    "First won in {} cases ({}%)\n"
-                    "Second win in {} cases ({}%)",
-                    subject1->reference.name, first_num, first_num*subject1->getCost(),
-                    subject2->reference.name, second_num, second_num*subject2->getCost(),
-                    cnt, cnt * 100 / total_tests,
-                    total_tests - cnt, (total_tests - cnt) * 100 / total_tests), fmt::color::green_yellow);
-            repeat = Input::Confirm("Test this units again?");
+               auto data = testCase(subject1, subject2, first_num, second_num, total_tests);
+
+                Output::LogLine(fmt::format(
+                        "Results for test case {} ({} worth {} money) vs {} ({} worth {} money):\n"
+                        "First won in {} cases ({}%). On average {} units left\n"
+                        "Second win in {} cases ({}%). On average {} units left",
+                        subject1->reference.name, first_num, first_num*subject1->getCost(),
+                        subject2->reference.name, second_num, second_num*subject2->getCost(),
+                        data.won_1, data.won_1 * 100 / total_tests, data.avg_left_1,
+                        total_tests - data.won_1, (total_tests - data.won_1) * 100 / total_tests, data.avg_left_2),
+                                fmt::color::green_yellow);
+                repeat = Input::Confirm("Test this units again?");
+            }
+            in_test = Input::Confirm("Test other units?");
         }
-
         Output::battle_logging = false;
     }
 
@@ -85,18 +96,24 @@ public:
     }
 private:
     // Returns total wins of subject 1
-    size_t testCase(Cloner* subject1, Cloner* subject2, int64_t num_1, int64_t num_2, size_t iterations) {
+    static TestData testCase(Cloner* subject1, Cloner* subject2, int64_t num_1, int64_t num_2, size_t iterations) {
         size_t cnt = 0;
+        int64_t left_1 = 0;
+        int64_t left_2 = 0;
         for (size_t i = 0; i < iterations; ++i) {
             std::vector<UnitGroup> groups1{subject1->create(num_1)};
             std::vector<UnitGroup> groups2{subject2->create(num_2)};
             Army army1(groups1);
             Army army2(groups2);
-            if (Battle::Start(army1, army2)) {
+            TestInfo info;
+            if (Battle::Start(army1, army2), &info) {
                 ++cnt;
             }
+            left_1 += info.first_army_left;
+            left_2 += info.second_army_left;
         }
-        return cnt;
+        double diterations = static_cast<double>(iterations);
+        return {static_cast<double>(left_1) / diterations, static_cast<double>(left_2) / diterations, cnt};
     }
 
     const std::string list_path;

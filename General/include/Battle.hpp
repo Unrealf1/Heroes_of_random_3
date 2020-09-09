@@ -8,9 +8,14 @@
 #include "Army.hpp"
 #include "Interaction/Output.hpp"
 
+struct TestInfo {
+    int64_t first_army_left = 0;
+    int64_t second_army_left = 0;
+};
+
 class Battle {
 public:
-    static bool Start(Army& player, Army& enemy) {
+    static bool Start(Army& player, Army& enemy, TestInfo* info = nullptr) {
         player.is_player = true;
         while(!player.Defeated() && !enemy.Defeated()) {
             auto& player_top = player.getCurrent();
@@ -30,7 +35,18 @@ public:
             }
             player.Cycle();
             enemy.Cycle();
+
             LogBattleStatus(player, enemy);
+        }
+        if (info != nullptr) {
+            info->first_army_left = 0;
+            for (auto& group : player.composition) {
+                info->first_army_left += group.GetCount();
+            }
+            info->second_army_left = 0;
+            for (auto& group : enemy.composition) {
+                info->second_army_left += group.GetCount();
+            }
         }
         if (player.Defeated()) {
             Output::LogLoss();
