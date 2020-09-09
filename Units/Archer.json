@@ -6,7 +6,5 @@
   "min_damage": 1,
   "name": "Archer",
   "speed": 5,
-  "tags": [
-    "retaliation"
-  ]
+  "tags": []
 }
