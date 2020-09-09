@@ -37,18 +37,21 @@ public:
         available_units[cloners.size()] = "Shuffle";
         offer += fmt::format(pattern, "Shuffle", shuffle_price) + "\n";
 
-        std::vector<UnitGroup> player_units;
+        Army player;
         std::string choice;
         int64_t current_money = 0;
         for (int stage = 1;; ++stage) {
             auto enemy_dudes = generateArmy(initial_money + enemy_budget_step*(stage - 1));
             Army enemy(enemy_dudes);
+            for (auto& unit : enemy.composition) {
+                unit.army = &enemy;
+            }
             current_money += initial_money;
 
             Output::LogInfo(fmt::format("Stage {} started", stage));
             if (stage != 1) {
                 Output::LogInfo("Your army:");
-                LogArmy(Army(player_units));
+                LogArmy(player);
             }
             Output::LogInfo("Enemy army:");
             LogArmy(enemy);
@@ -78,9 +81,9 @@ public:
                             std::vector<std::string>{"yes", "no", "y", "n"});
                     if (confirmation == "y" || confirmation == "yes") {
                         current_money -= shuffle_price;
-                        RandomGenerator::shuffle(player_units);
+                        RandomGenerator::shuffle(player.composition);
                         Output::LogInfo("Your army:");
-                        LogArmy(Army(player_units));
+                        LogArmy(Army(player.composition));
                     }
                     continue;
                 }
@@ -99,7 +102,8 @@ public:
                                     std::vector<std::string>{"yes", "no", "y", "n"});
                             if (confirmation == "y" || confirmation == "yes") {
                                 current_money -= total_cost;
-                                player_units.push_back(f->create(num));
+                                player.composition.push_back(f->create(num));
+                                player.composition.back().army = &player;
                             }
                             break;
                         }
@@ -107,7 +111,6 @@ public:
                 }
 
             } while (choice != "finish");
-            Army player(player_units);
 
             if (!Battle::Start(player, enemy)) {
                 return;
