@@ -11,21 +11,16 @@
 
 int main() {
     std::string answer;
-    std::vector<std::string> options{"create", "inspect"};
+    std::vector<std::string> options{"create", "edit", "test"};
     UnitSerializer serializer("./Units");
     UnitEditor inspector("./Units");
-
-    while (answer != "finish") {
-        answer = Input::AskForChoiceWithFinish(
-                "What would you like to do?",
-                fmt::color::wheat,
-                options);
-        if (answer == "create") {
+    Input::dispatcher_t dispatcher([&](std::string choice) {
+        if (choice == "create") {
             inspector.create(serializer);
-        } else if (answer == "inspect") {
+        } else if (choice == "edit") {
             inspector.edit(serializer);
+        } else if (choice == "test") {
+            inspector.test();
         }
-    }
-
-
-}
+    });
+    Input::ChoiceActionWithFinish(dispatcher, "What would you like to do?", fmt::color::wheat, options);
