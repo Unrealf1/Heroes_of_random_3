@@ -2,7 +2,7 @@
     "armor": 1,
     "cost": 20,
     "hp": 10,
-    "max_damage": 15,
+    "max_damage": 12,
     "min_damage": 1,
     "name": "Swordsmen",
     "speed": 4,

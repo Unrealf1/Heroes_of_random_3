@@ -1,7 +1,7 @@
 {
     "armor": 0,
     "cost": 500,
-    "hp": 500,
+    "hp": 600,
     "max_damage": 55,
     "min_damage": 35,
     "name": "Dragon",
