@@ -32,7 +32,7 @@ public:
         std::string offer;
         for (size_t i = 0; i < cloners.size(); ++i) {
             available_units[i] = cloners[i]->create(1).name;
-            offer += fmt::format(pattern, cloners[i]->create(1).name, cloners[i]->getCost()) + "\n";
+            offer += fmt::format(pattern, cloners[i]->getReference().name, cloners[i]->getCost()) + "\n";
         }
         available_units[cloners.size()] = "Shuffle";
         offer += fmt::format(pattern, "Shuffle", shuffle_price) + "\n";

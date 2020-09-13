@@ -13,9 +13,9 @@ public:
     Cloner(UnitGroup reference, int64_t cost)
     : cost(cost), reference(std::move(reference)){}
 
-    UnitGroup create(int64_t count) {
+    UnitGroup create(size_t count) {
         auto copy = reference;
-        copy.count = count;
+        copy.count = static_cast<int64_t >(count);
         return copy;
     }
 
@@ -30,5 +30,7 @@ private:
     int64_t cost;
     UnitGroup reference;
 };
+
+
 
 #endif //HEROES_OF_RANDOM_UNITCLONER_HPP

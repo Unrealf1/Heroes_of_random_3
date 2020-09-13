@@ -14,6 +14,7 @@
 #include <Units/UnitSerializer.hpp>
 #include <Tags/Tags.hpp>
 #include <fmt/ranges.h>
+#include <Interaction/TestLogger.hpp>
 #include "Battle.hpp"
 
 struct TestData {
@@ -58,7 +59,9 @@ public:
     }
 
     void test() {
-        Output::battle_logging = false;
+        ILogger* old_logger = Output::logger;
+        TestLogger tloger;
+        Output::logger = &tloger;
         bool in_test = true;
         while(in_test) {
             Cloner* subject1 = askForUnit("Choose first unit");
@@ -84,7 +87,9 @@ public:
             }
             in_test = Input::Confirm("Test other units?");
         }
-        Output::battle_logging = false;
+
+
+        Output::logger = old_logger;
     }
 
     ~UnitEditor() {

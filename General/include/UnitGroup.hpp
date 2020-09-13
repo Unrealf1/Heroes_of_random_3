@@ -9,6 +9,7 @@
 
 #include "Interaction/Output.hpp"
 #include "Random.hpp"
+//#include "Army.hpp"
 
 using rnd = RandomGenerator;
 
@@ -41,53 +42,17 @@ public:
             int64_t count=0,
             std::vector<std::string> tags = {},
             ActionPack actions = {}
-    )
-            : hp(hp),
-              min_damage(min_damage),
-              max_damage(max_damage),
-              armor(armor),
-              speed(speed),
-              name(std::move(name)),
-              count(count),
-              top_hp(hp),
-              tags(std::move(tags)),
-              actions(std::move(actions)){}
+    );
 
-    int64_t Attack(UnitGroup& target, bool owned_by_player=false) {
-        for (auto& action : actions.before_attack) {
-            action(this, army, &target);
-        }
-        for (auto& action : target.actions.before_attacked) {
-            action(&target, army, this);
-        }
+    int64_t Attack(UnitGroup& target, const std::string &my_army_name, const std::string &enemy_army_name);
 
-        auto dmg = doAttack(target);
-        Output::LogAttack(name, target.name, dmg, owned_by_player);
+    void TakeDamage(int64_t dmg);
 
-        for (auto& action : target.actions.after_attacked) {
-            action(&target, army, this, dmg);
-        }
-        for (auto& action : actions.after_attack) {
-            action(this, army, &target, dmg);
-        }
-        return dmg;
-    }
+    bool IsAlive() const;
 
-    void TakeDamage(int64_t dmg) {
-        doTakeDamage(dmg);
-    }
+    int64_t GetCount() const;
 
-    bool IsAlive() const {
-        return count > 0;
-    }
-
-    int64_t GetCount() const {
-        return count;
-    }
-
-    int64_t GetTopHp() const {
-        return top_hp;
-    }
+    int64_t GetTopHp() const;
 
     Army* army = nullptr;
 
@@ -99,42 +64,11 @@ public:
 
     std::string name;
 
-    int64_t doAttack(UnitGroup& target) {
-        int64_t total_dmg = 0;
-        for (int64_t i = 0; i < count; ++i) {
-            total_dmg += std::max<int64_t>(rnd::randint(min_damage, max_damage+1) - target.armor, 0);
-        }
-        target.TakeDamage(total_dmg);
-        return total_dmg;
-    }
+    int64_t doAttack(UnitGroup& target);
 
-    void doTakeDamage(int64_t dmg) {
-        // First
-        if (top_hp < hp) {
-            if (dmg < top_hp) {
-                top_hp -= dmg;
-                dmg = 0;
-            }
-            else {
-                dmg -= top_hp;
-                top_hp = hp;
-                count--;
-            }
-        }
+    void doTakeDamage(int64_t dmg);
 
-        // Mid
-        int64_t killed = dmg / hp;
-        count -= killed;
-        count = std::max<int64_t>(count, 0);
-        dmg -= killed*hp;
-
-        // Last
-        top_hp -= dmg;
-    }
-
-    void heal(int64_t amount) {
-        top_hp = std::min(hp, top_hp + amount);
-    }
+    void heal(int64_t amount);
 private:
     int64_t count;
     int64_t top_hp;

@@ -29,3 +29,5 @@ include(cmake/Conan.cmake)
 run_conan()
 
 add_subdirectory("General")
+add_subdirectory("Game")
+add_subdirectory("Editor")

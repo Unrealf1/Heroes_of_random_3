@@ -13,68 +13,25 @@
 
 class Army {
 public:
-    explicit Army(std::vector<UnitGroup> groups = {})
-            :composition(std::move(groups)) {
-        for (auto& group : composition) {
-            group.army = this;
-        }
-    }
+    explicit Army(std::vector<UnitGroup> groups = {});
 
-    UnitGroup& getCurrent() {
-        return composition[current_index];
-    }
+    UnitGroup& getCurrent();
 
-    void Cycle() {
-        if (Defeated()) {
-            return;
-        }
+    void Cycle();
 
-        do {
-            current_index = (current_index + 1) % composition.size();
-        } while(!composition[current_index].IsAlive());
-    }
+    size_t GroupsLeft() const;
 
-    size_t GroupsLeft() const {
-        size_t cnt = 0;
-        for (auto& group : composition) {
-            if (group.IsAlive()) {
-                ++cnt;
-            }
-        }
-        return cnt;
-    }
+    bool Defeated() const;
 
-    bool Defeated() const {
-        return GroupsLeft() == 0;
-    }
+    size_t GetCurrentIndex() const;
 
-    size_t GetCurrentIndex() const {
-        return current_index;
-    }
-
-    ~Army() {
-        for (auto& group : composition) {
-            group.army = nullptr;
-        }
-    }
+    ~Army();
 
     std::vector<UnitGroup> composition;
 
-    void clear() {
-        for (size_t i = 0; i < composition.size(); ++i) {
-            if (!composition[i].IsAlive()) {
-                if (current_index == i) {
-                    Cycle();
-                }
-                if (current_index > i) {
-                    --current_index;
-                }
-                composition.erase(composition.begin() + static_cast<int64_t >(i));
-            }
-        }
-    }
+    void clear();
 
-    bool is_player = false;
+    std::string name = "Enemy";
 private:
     size_t current_index = 0;
 };
