@@ -12,6 +12,8 @@
 #include <thread>
 
 #include "Random.hpp"
+#include "ILogger.hpp"
+#include "ConsoleLogger.hpp"
 
 using rnd = RandomGenerator;
 
@@ -22,17 +24,18 @@ public:
     static inline void LogLine(
             const std::string& message,
             const fmt::color& clr) {
-        fmt::print(fg(clr), "{}", message);
-        fmt::print("\n");
+        if (logger == nullptr) {
+            logger = &default_logger;
+        }
+        logger->LogLine(message, clr);
     }
 
-    inline static bool battle_logging = true;
     static void LogInBattle(const std::string& message,
                             const fmt::color& clr) {
-        if (!battle_logging) {return;}
-        //should change to sleep_untill
-        std::this_thread::sleep_for(minimum_battle_display_delay);
-        LogLine(message, clr);
+        if (logger == nullptr) {
+            logger = &default_logger;
+        }
+        logger->LogInBattle(message, clr);
     }
 
     static void LogAbility(const std::string& message) {
@@ -46,17 +49,10 @@ public:
     static void LogAttack(
             const std::string& attackers,
             const std::string& defenders,
-            int64_t damage,
-            bool player_attacks = false
+            int64_t damage
     ) {
-        if (player_attacks) {
-            LogInBattle(fmt::format("Your {} dealed {} damage to enemy {}", attackers, damage, defenders),
+            LogInBattle(fmt::format("{} dealed {} damage to {}", attackers, damage, defenders),
                         fmt::color::crimson);
-        } else {
-            LogInBattle(fmt::format("Enemy {} dealed {} damage to your {}", attackers, damage, defenders),
-                        fmt::color::crimson);
-        }
-
     }
 
     static void LogRound(
@@ -90,18 +86,17 @@ public:
     }
 
     static void LogVictory() {
-        if (!battle_logging) {return;}
         const std::string& quote = rnd::sample(victory_quotes);
-        LogLine(fmt::format(quote), fmt::color::yellow);
+        LogInBattle(fmt::format(quote), fmt::color::yellow);
     }
 
     static void LogLoss() {
-        if (!battle_logging) {return;}
         const std::string& quote = rnd::sample(loss_quotes);
-        LogLine(fmt::format(quote), fmt::color::blue);
+        LogInBattle(fmt::format(quote), fmt::color::blue);
     }
-
+    inline static ILogger* logger = nullptr;
 private:
+    inline static ConsoleLogger default_logger;
     //0-attackers; 1-defenders; 2-were_attackers; 3-were_defenders; 4-died-atk; 5-died-def
     inline static std::array<std::string, 3> attack_quotes = {
             "{0} reduced population of {1} by {5}, but {4} of them died after",
@@ -119,9 +114,6 @@ private:
     inline static std::array<std::string, 2> loss_quotes = {
             "You lost.",
             "This is the end of your journey"};
-
-    inline static std::chrono::milliseconds minimum_battle_display_delay{300};
-    //inline static std::chrono::time_point next_post_time = std::chrono::duration<int>(1);*/
 };
 
 #endif //HEROES_OF_RANDOM_OUTPUT_HPP

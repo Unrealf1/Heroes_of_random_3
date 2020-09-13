@@ -16,7 +16,6 @@ struct TestInfo {
 class Battle {
 public:
     static bool Start(Army& player, Army& enemy, TestInfo* info = nullptr) {
-        player.is_player = true;
         while(!player.Defeated() && !enemy.Defeated()) {
             auto& player_top = player.getCurrent();
             auto& enemy_top = enemy.getCurrent();
@@ -63,8 +62,8 @@ private:
     static void Round(UnitGroup& first, UnitGroup& second) {
         auto were_first = first.GetCount();
         auto were_second = second.GetCount();
-        first.Attack(second, first.army->is_player);
-        second.Attack(first, second.army->is_player);
+        first.Attack(second, first.army->name, second.army->name);
+        second.Attack(first, second.army->name, first.army->name);
         Output::LogRound(
                 first.name,
                 second.name,
@@ -84,23 +83,21 @@ private:
 
     // Should use stringbuilder
     static void LogBattleStatus(const Army& player, const Army& enemy) {
-        if (!Output::battle_logging) {return;}
-
-        std::string to_log = "Current disposition:\nPlayer: ";
+        std::string to_log = fmt::format("Current disposition:\n{}: ", player.name);
         for (size_t i = 0; i < player.composition.size(); ++i) {
             auto& group = player.composition[
                     (i + player.GetCurrentIndex()) % player.composition.size()
             ];
             groupToString(group, to_log);
         }
-        to_log += "\nEnemy: ";
+        to_log += fmt::format("\n{}: ", enemy.name);
         for (size_t i = 0; i < enemy.composition.size(); ++i) {
             auto& group = enemy.composition[
                     (i + enemy.GetCurrentIndex()) % enemy.composition.size()
             ];
             groupToString(group, to_log);
         }
-        Output::LogLine(to_log, fmt::color::lemon_chiffon);
+        Output::LogInBattle(to_log, fmt::color::lemon_chiffon);
     }
 
     static void groupToString(const UnitGroup& group, std::string& to_log) {

@@ -12,23 +12,17 @@
 #include "Units/UnitCloner.hpp"
 #include "Interaction/Input.hpp"
 #include "Battle.hpp"
+#include "BaseGameType.hpp"
 
-class RandomBattles {
+class RandomBattles: BaseGameType {
 public:
     RandomBattles(std::vector<Cloner*> cloners, int64_t initial_money)
-    : cloners(std::move(cloners)), initial_money(initial_money){}
+    : BaseGameType(std::move(cloners)), initial_money(initial_money){}
     void Start() {
-        std::string pattern = "{} for {}";
-        std::vector<std::string> available_units(cloners.size());
-        std::string offer;
-
-        for (size_t i = 0; i < cloners.size(); ++i) {
-            available_units[i] = cloners[i]->getReference().name;
-            offer += fmt::format(pattern, cloners[i]->getReference().name, cloners[i]->getCost()) + "\n";
-        }
+        auto offer = getOffer(cloners);
         std::vector<UnitGroup> playerUnits;
         auto current_money = initial_money;
-        std::function<void(std::string)> dispatcher([this, &current_money, &playerUnits](std::string choice){
+        std::function<void(std::string)> dispatcher([this, &current_money, &playerUnits](std::string choice) {
             for (auto& f : cloners) {
                 if (f->getReference().name == choice) {
                     int64_t num = Input::AskForInt("How many?");
@@ -56,13 +50,13 @@ public:
                             offer);
                 }),
                 fmt::color::white,
-                available_units);
+                getNames(cloners));
 
         Army army(playerUnits);
+        army.name = "Player";
         Play(army);
     }
 private:
-    const std::vector<Cloner*> cloners;
     const int64_t initial_money;
 
     void Play(Army& player) {

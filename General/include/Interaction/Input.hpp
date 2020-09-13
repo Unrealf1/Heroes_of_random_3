@@ -13,11 +13,10 @@
 class Input {
 public:
     static std::string AskForLine(const std::string& message,
-                           const fmt::color& clr) {
+                           const fmt::color& clr = fmt::color::white) {
         Output::LogLine(message, clr);
         std::string answer;
         std::getline(std::cin, answer);
-        //std::transform(answer.begin(), answer.end(), answer.begin(), ::tolower);
         return answer;
     }
 
