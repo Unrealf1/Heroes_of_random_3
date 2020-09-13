@@ -1,4 +1,3 @@
-#include <Interaction/ConsoleLogger.hpp>
 #include <GameTypes/Arena.hpp>
 #include "GameTypes/RandomBattles.hpp"
 #include "GameTypes/RogueLikeYakun.hpp"

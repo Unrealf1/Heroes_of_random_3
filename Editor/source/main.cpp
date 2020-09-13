@@ -3,10 +3,9 @@
 //
 
 #include "Interaction/Input.hpp"
-#include "../include/UnitEditor.hpp"
+#include "UnitEditor.hpp"
 #include <fmt/color.h>
 #include <string>
-#include "Units/UnitCloner.hpp"
 #include "Units/UnitSerializer.hpp"
 
 int main() {
