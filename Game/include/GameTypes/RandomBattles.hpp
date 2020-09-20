@@ -67,8 +67,10 @@ private:
             auto enemy_dudes = generateArmy(enemy_cost);
             Army enemy(enemy_dudes);
             if (!Battle::Start(player, enemy)) {
+                Output::LogLoss();
                 return;
             }
+            Output::LogVictory();
             Output::LogInfo(fmt::format("Be ready for the next battle!"));
             std::this_thread::sleep_for(std::chrono::milliseconds(500));
             enemy_cost -= std::max(50l, static_cast<int64_t>(0.1* static_cast<double>(enemy_cost)));

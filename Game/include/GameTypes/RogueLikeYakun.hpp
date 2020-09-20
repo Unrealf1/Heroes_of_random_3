@@ -113,8 +113,10 @@ public:
             } while (choice != "finish");
 
             if (!Battle::Start(player, enemy)) {
+                Output::LogLoss();
                 return;
             }
+            Output::LogVictory();
         }
     }
 private:
