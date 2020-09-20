@@ -49,13 +49,7 @@ public:
                 info->second_army_left += group.GetCount();
             }
         }
-        if (player.Defeated()) {
-            Output::LogLoss();
-            return false;
-        } else {
-            Output::LogVictory();
-            return true;
-        }
+        return !player.Defeated();
     }
 
 private:

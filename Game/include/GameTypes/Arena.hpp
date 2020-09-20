@@ -14,11 +14,16 @@
 
 class Arena: BaseGameType {
 public:
-    Arena(std::vector<Cloner*> cloners, size_t num_battles, size_t initial_money, size_t max_unit_cost=500):
+    Arena(std::vector<Cloner*> cloners,
+            size_t num_battles,
+            size_t initial_money,
+            size_t max_unit_cost=500,
+            size_t income=0):
             BaseGameType(std::move(cloners)),
             num_battles(num_battles),
             initial_money(initial_money),
-            max_unit_cost(max_unit_cost) {}
+            max_unit_cost(max_unit_cost),
+            income(income) {}
 
     void startLocal() {
         auto name1 = Input::AskForLine("Enter name of the first player");
@@ -55,10 +60,12 @@ private:
         player opponent{name2, initial_money, {}};
         while (current.won <= num_battles / 2 && opponent.won <= num_battles / 2) {
             round(current, opponent);
+            current.money += income;
+            current.money += income;
         }
 
         auto winner = current.won > opponent.won  ? name1 : name2;
-        Output::LogInfo(fmt::format("{} have won!"));
+        Output::LogInfo(fmt::format("{} have won!", winner));
 
         Output::logger = old_logger;
     }
@@ -77,9 +84,9 @@ private:
         shop(opponent);
 
         Army cur(current.units);
-        cur.name = "Player 1";
+        cur.name = current.name;
         Army opp(opponent.units);
-        opp.name = "Player 2";
+        opp.name = opponent.name;
         if (Battle::Start(cur, opp)) {
             ++current.won;
         } else {
@@ -130,6 +137,7 @@ private:
     const size_t num_battles;
     const size_t initial_money;
     const size_t max_unit_cost;
+    const size_t income;
 };
 
 #endif //HEROES_OF_RANDOM_ARENA_HPP
