@@ -12,7 +12,7 @@ struct Vampiric {
     inline const static std::string name = "vampiric";
     inline const static TagInsides insides = {
             {},
-            {post_action_t([](UnitGroup* me, Army*, UnitGroup* target, int64_t dmg){
+            {post_action_t([](UnitGroup* me, UnitGroup* target, int64_t dmg){
                 auto percent = RandomGenerator::randint(101);
                 auto heal = percent * dmg / 100;
                 me->heal(heal);

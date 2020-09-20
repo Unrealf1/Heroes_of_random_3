@@ -62,4 +62,12 @@ void Army::clear() {
     }
 }
 
+std::vector<UnitGroup*> Army::getAlive() {
+    std::vector<UnitGroup*> res;
+    for (auto& unit : composition) {
+        res.push_back(&unit);
+    }
+    return res;
+}
+
 

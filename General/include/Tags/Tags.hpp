@@ -11,6 +11,7 @@
 #include "TagInsides.hpp"
 #include "Retaliation.hpp"
 #include "Vampiric.hpp"
+#include "Slayer.hpp"
 
 
 class TagContainer {
@@ -29,7 +30,9 @@ public:
 
     inline const static std::map<tag_t, TagInsides> actual_tags = {
             {Retaliation::name, Retaliation::insides},
-            {Vampiric::name, Vampiric::insides}
+            {Vampiric::name, Vampiric::insides},
+            {"hero", {}},
+            {Slayer::name, Slayer::insides}
     };
 };
 

@@ -71,10 +71,10 @@ UnitGroup::UnitGroup(int64_t hp, int64_t min_damage, int64_t max_damage, int64_t
 
 int64_t UnitGroup::Attack(UnitGroup &target, const std::string &my_army_name, const std::string &enemy_army_name) {
     for (auto& action : actions.before_attack) {
-        action(this, army, &target);
+        action(this, &target);
     }
     for (auto& action : target.actions.before_attacked) {
-        action(&target, army, this);
+        action(&target, this);
     }
 
     auto dmg = doAttack(target);
@@ -84,11 +84,20 @@ int64_t UnitGroup::Attack(UnitGroup &target, const std::string &my_army_name, co
             dmg);
 
     for (auto& action : target.actions.after_attacked) {
-        action(&target, army, this, dmg);
+        action(&target, this, dmg);
     }
     for (auto& action : actions.after_attack) {
-        action(this, army, &target, dmg);
+        action(this, &target, dmg);
     }
     return dmg;
+}
+
+bool UnitGroup::has_tag(const std::string &tag) {
+    for (auto& t : tags) {
+        if (t == tag) {
+            return true;
+        }
+    }
+    return false;
 }
 

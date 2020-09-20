@@ -25,6 +25,8 @@ public:
 
     size_t GetCurrentIndex() const;
 
+    std::vector<UnitGroup*> getAlive();
+
     ~Army();
 
     std::vector<UnitGroup> composition;

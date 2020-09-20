@@ -16,8 +16,8 @@ using rnd = RandomGenerator;
 class Army;
 class UnitGroup;
 
-using action_t = std::function<void(UnitGroup*, Army*, UnitGroup*)>;
-using post_action_t = std::function<void(UnitGroup*, Army*, UnitGroup*, int64_t)>;
+using action_t = std::function<void(UnitGroup*, UnitGroup*)>;
+using post_action_t = std::function<void(UnitGroup*, UnitGroup*, int64_t)>;
 using actions_t = std::vector<action_t>;
 using post_actions_t = std::vector<post_action_t>;
 
@@ -69,6 +69,8 @@ public:
     void doTakeDamage(int64_t dmg);
 
     void heal(int64_t amount);
+
+    bool has_tag(const std::string& tag);
 private:
     int64_t count;
     int64_t top_hp;

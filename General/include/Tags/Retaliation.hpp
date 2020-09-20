@@ -14,7 +14,7 @@ struct Retaliation {
             {},
             {},
             {},
-            {post_action_t([](UnitGroup* me, Army*, UnitGroup* target, int64_t){
+            {post_action_t([](UnitGroup* me, UnitGroup* target, int64_t){
                 auto dmg = me->doAttack(*target);
                 Output::LogAbility(fmt::format(
                         "{} retaliated upon {} and dealed {} damage!",

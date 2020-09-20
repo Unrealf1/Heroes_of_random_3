@@ -15,6 +15,9 @@ public:
 
     UnitGroup create(size_t count) {
         auto copy = reference;
+        if (count > 1 && copy.has_tag("hero")) {
+            count = 1;
+        }
         copy.count = static_cast<int64_t >(count);
         return copy;
     }
