@@ -58,11 +58,12 @@ void UnitGroup::TakeDamage(int64_t dmg) {
 }
 
 UnitGroup::UnitGroup(int64_t hp, int64_t min_damage, int64_t max_damage, int64_t armor, int64_t speed, std::string name,
-                     int64_t count, std::vector<std::string> tags, ActionPack actions) : hp(hp),
+                     int64_t cost, int64_t count, std::vector<std::string> tags, ActionPack actions) : hp(hp),
                                                                                          min_damage(min_damage),
                                                                                          max_damage(max_damage),
                                                                                          armor(armor),
                                                                                          speed(speed),
+                                                                                         cost(cost),
                                                                                          name(std::move(name)),
                                                                                          count(count),
                                                                                          top_hp(hp),
@@ -92,7 +93,7 @@ int64_t UnitGroup::Attack(UnitGroup &target, const std::string &my_army_name, co
     return dmg;
 }
 
-bool UnitGroup::has_tag(const std::string &tag) {
+bool UnitGroup::has_tag(const std::string &tag) const {
     for (auto& t : tags) {
         if (t == tag) {
             return true;

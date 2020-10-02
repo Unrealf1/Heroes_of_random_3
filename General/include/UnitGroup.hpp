@@ -39,7 +39,8 @@ public:
             int64_t armor,
             int64_t speed,
             std::string name,
-            int64_t count=0,
+            int64_t cost = 0,
+            int64_t count = 0,
             std::vector<std::string> tags = {},
             ActionPack actions = {}
     );
@@ -61,6 +62,7 @@ public:
     int64_t max_damage;
     int64_t armor;
     int64_t speed;
+    int64_t cost;
 
     std::string name;
 
@@ -70,7 +72,8 @@ public:
 
     void heal(int64_t amount);
 
-    bool has_tag(const std::string& tag);
+    bool has_tag(const std::string& tag) const;
+
 private:
     int64_t count;
     int64_t top_hp;

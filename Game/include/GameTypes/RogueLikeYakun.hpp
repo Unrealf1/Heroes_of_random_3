@@ -13,7 +13,7 @@
 #include "Interaction/Input.hpp"
 #include "Battle.hpp"
 
-class RogueLike {
+class RogueLike: BaseGameType {
 public:
     RogueLike(
             std::vector<Cloner*>  cloners,
@@ -21,22 +21,13 @@ public:
             int64_t shuffle_price,
             int64_t enemy_budget_step
         )
-        : cloners(std::move(cloners)),
+        : BaseGameType(std::move(cloners)),
           initial_money(initial_money),
           shuffle_price(shuffle_price),
           enemy_budget_step(enemy_budget_step){}
     void Start() {
-        std::string pattern = "{} for {}";
-        std::vector<std::string> available_units(cloners.size() + 1);
-
-        std::string offer;
-        for (size_t i = 0; i < cloners.size(); ++i) {
-            available_units[i] = cloners[i]->create(1).name;
-            offer += fmt::format(pattern, cloners[i]->getReference().name, cloners[i]->getCost()) + "\n";
-        }
-        available_units[cloners.size()] = "Shuffle";
-        offer += fmt::format(pattern, "Shuffle", shuffle_price) + "\n";
-
+        auto non_hero = clonersWithoutTags(cloners, {"hero"});
+        auto offer = getOffer(non_hero);
         Army player;
         std::string choice;
         int64_t current_money = 0;
@@ -64,7 +55,7 @@ public:
                                 current_money,
                                 offer),
                         fmt::color::white,
-                        available_units,
+                        getNames(non_hero),
                         "Please choose one of the given options"
                 );
 
@@ -73,13 +64,9 @@ public:
                         Output::LogInfo("Sorry, not enough money");
                         continue;
                     }
-                    auto confirmation = Input::AskForChoice(
-                            fmt::format(
-                                    "For {} positions of your units will be shuffled",
-                                    shuffle_price),
-                            fmt::color::white,
-                            std::vector<std::string>{"yes", "no", "y", "n"});
-                    if (confirmation == "y" || confirmation == "yes") {
+                    if (Input::Confirm(fmt::format(
+                            "For {} positions of your units will be shuffled",
+                            shuffle_price))) {
                         current_money -= shuffle_price;
                         RandomGenerator::shuffle(player.composition);
                         Output::LogInfo("Your army:");
@@ -89,18 +76,14 @@ public:
                 }
 
                 for (auto &f : cloners) {
-                    if (f->create(1).name == choice) {
+                    if (f->getReference().name == choice) {
                         int64_t num = Input::AskForInt("How many?");
                         auto total_cost = num * f->getCost();
                         if (total_cost > current_money) {
                             Output::LogInfo("Sorry, not enough money");
                             break;
                         } else {
-                            auto confirmation = Input::AskForChoice(
-                                    fmt::format("Total cost is {}. Are you sure? (yes/no)", total_cost),
-                                    fmt::color::white,
-                                    std::vector<std::string>{"yes", "no", "y", "n"});
-                            if (confirmation == "y" || confirmation == "yes") {
+                            if (Input::Confirm(fmt::format("Total cost is {}. Are you sure?", total_cost))) {
                                 current_money -= total_cost;
                                 player.composition.push_back(f->create(num));
                                 player.composition.back().army = &player;
@@ -111,32 +94,26 @@ public:
                 }
 
             } while (choice != "finish");
-
+            auto possible_score = getScore(enemy);
             if (!Battle::Start(player, enemy)) {
                 Output::LogLoss();
+                Output::LogLine(
+                        fmt::format("You died on stage {}\nYour score is {}", stage, total_score),
+                        fmt::color::forest_green);
                 return;
             }
+            total_score += possible_score;
             Output::LogVictory();
         }
     }
 private:
-    const std::vector<Cloner*> cloners;
     const int64_t initial_money;
     const int64_t shuffle_price;
     const int64_t enemy_budget_step;
-
-    std::vector<Cloner*> getAffordable(int64_t money) {
-        std::vector<Cloner*> affordable_factories;
-        for (auto& f : cloners) {
-            if (f->getCost() <= money) {
-                affordable_factories.push_back(f);
-            }
-        }
-        return affordable_factories;
-    }
+    int64_t total_score = 0;
 
     std::vector<UnitGroup> generateArmy(int64_t cost) {
-        auto affordable = getAffordable(cost);
+        auto affordable = getAffordable(cloners, cost);
         std::vector<UnitGroup> dudes;
         while (!affordable.empty()) {
             auto& choice = RandomGenerator::sample(affordable);
@@ -146,7 +123,7 @@ private:
             }
             dudes.push_back(choice->create(num));
             cost -= choice->getCost() * num;
-            affordable = getAffordable(cost);
+            affordable = getAffordable(affordable, cost);
         }
         return dudes;
     }

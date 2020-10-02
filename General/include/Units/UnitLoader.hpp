@@ -67,6 +67,7 @@ public:
                 armor,
                 speed,
                 name,
+                cost,
                 0,
                 tags,
                 actions

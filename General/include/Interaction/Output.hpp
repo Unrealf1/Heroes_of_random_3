@@ -23,7 +23,7 @@ public:
 
     static inline void LogLine(
             const std::string& message,
-            const fmt::color& clr) {
+            const fmt::color& clr=fmt::color::white) {
         if (logger == nullptr) {
             logger = &default_logger;
         }

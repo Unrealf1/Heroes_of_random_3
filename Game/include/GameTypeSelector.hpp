@@ -17,8 +17,10 @@ public:
         auto to_settings = Input::Confirm("Do you want to change settings?");
         if (choice == battles_name) {
             RandomBattles battles(all_cloners, 400);
+            battles.Start();
         } else if (choice == roguelike_name) {
             RogueLike rl(all_cloners, 400, 5, 100);
+            rl.Start();
         } else if (choice == arena_name) {
             size_t num_battles = 3;
             size_t initial_money = 4000;

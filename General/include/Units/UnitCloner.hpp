@@ -15,9 +15,6 @@ public:
 
     UnitGroup create(size_t count) {
         auto copy = reference;
-        if (count > 1 && copy.has_tag("hero")) {
-            count = 1;
-        }
         copy.count = static_cast<int64_t >(count);
         return copy;
     }
@@ -26,7 +23,7 @@ public:
         return reference;
     }
 
-    int64_t getCost() const {
+    [[nodiscard]] int64_t getCost() const {
         return cost;
     }
 private:

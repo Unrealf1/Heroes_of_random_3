@@ -77,29 +77,18 @@ private:
         }
     }
 
-
-    std::vector<Cloner*> getAffordable(int64_t money) {
-        std::vector<Cloner*> affordable_factories;
-        for (auto& f : cloners) {
-            if (f->getCost() <= money) {
-                affordable_factories.push_back(f);
-            }
-        }
-        return affordable_factories;
-    }
-
-    std::vector<UnitGroup> generateArmy(int64_t cost) {
-        auto affordable = getAffordable(cost);
+    std::vector<UnitGroup> generateArmy(int64_t funds) {
+        auto affordable = getAffordable(cloners, funds);
         std::vector<UnitGroup> dudes;
         while (!affordable.empty()) {
             auto& choice = RandomGenerator::sample(affordable);
-            auto num = RandomGenerator::randint(1, cost / choice->getCost() + 1);
+            auto num = RandomGenerator::randint(1, funds / choice->getCost() + 1);
             if (num == 0) {
                 continue;
             }
             dudes.push_back(choice->create(num));
-            cost -= choice->getCost() * num;
-            affordable = getAffordable(cost);
+            funds -= choice->getCost() * num;
+            affordable = getAffordable(affordable, funds);
         }
         return dudes;
     }
